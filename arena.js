@@ -90,41 +90,51 @@ function sumScore(scoreArray, gameboardLength, startValue){
 function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
 	let ai = match.ai[aiIndex%2];
-	ai.onmessage = messageEvent => {
-		ai.onmessage = undefined;
-		let selectedMove = messageEvent.data;
-		let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
-		match.gameboard = moveData['gameboard'];
-
-		// Switch AI
-		if(!moveData['moveAgain']){
-			aiIndex++;
-			for(let i=0; i < match.gameboard.length/2; i++){
-				match.gameboard.push(match.gameboard.shift());
+	// TODO: If ai is Object and .worker is undefined. Sleep and then try again.
+	if(typeof ai === 'object'){
+		setTimeout(() => {
+			if(ai.worker !== undefined){
+				match.ai[aiIndex%2] = ai.worker;
 			}
-		}
-		if(isGameFinished(match.gameboard)){
-			if(aiIndex%2){
+			callAI(matchList, matchIndex, aiIndex, data);
+		}, 1000);
+	}else{
+		ai.onmessage = messageEvent => {
+			ai.onmessage = undefined;
+			let selectedMove = messageEvent.data;
+			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
+			match.gameboard = moveData['gameboard'];
+
+			// Switch AI
+			if(!moveData['moveAgain']){
+				aiIndex++;
 				for(let i=0; i < match.gameboard.length/2; i++){
 					match.gameboard.push(match.gameboard.shift());
 				}
 			}
-			match.score = sumBoard(match.gameboard);
-			let done = true;
-			let scoreArray = [];
-			matchList.forEach(match => {
-				done &= match.score !== undefined;
-				scoreArray.push(match.score);
-			});
-			if(done){
-				let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue);
-				postMessage({id: data.id, score: score});
+			if(isGameFinished(match.gameboard)){
+				if(aiIndex%2){
+					for(let i=0; i < match.gameboard.length/2; i++){
+						match.gameboard.push(match.gameboard.shift());
+					}
+				}
+				match.score = sumBoard(match.gameboard);
+				let done = true;
+				let scoreArray = [];
+				matchList.forEach(match => {
+					done &= match.score !== undefined;
+					scoreArray.push(match.score);
+				});
+				if(done){
+					let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue);
+					postMessage({id: data.id, score: score});
+				}
+			}else{
+				callAI(matchList, matchIndex, aiIndex, data);
 			}
-		}else{
-			callAI(matchList, matchIndex, aiIndex, data);
-		}
-	};
-	ai.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
+		};
+		ai.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
+	}
 }
 onmessage = messageEvent => {
 	// Init simulation
