@@ -90,7 +90,6 @@ function sumScore(scoreArray, gameboardLength, startValue){
 function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
 	let ai = match.ai[aiIndex%2];
-	// TODO: If ai is Object and .worker is undefined. Sleep and then try again.
 	if(ai instanceof Worker){
 		ai.onmessage = messageEvent => {
 			ai.onmessage = undefined;
