@@ -91,14 +91,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
 	let ai = match.ai[aiIndex%2];
 	// TODO: If ai is Object and .worker is undefined. Sleep and then try again.
-	if(typeof ai === 'object'){
-		setTimeout(() => {
-			if(ai.worker !== undefined){
-				match.ai[aiIndex%2] = ai.worker;
-			}
-			callAI(matchList, matchIndex, aiIndex, data);
-		}, 1000);
-	}else{
+	if(ai instanceof Worker){
 		ai.onmessage = messageEvent => {
 			ai.onmessage = undefined;
 			let selectedMove = messageEvent.data;
@@ -134,6 +127,11 @@ function callAI(matchList, matchIndex, aiIndex, data){
 			}
 		};
 		ai.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
+	}else{
+		setTimeout(() => {
+			match.ai[aiIndex%2] = ai.worker;
+			callAI(matchList, matchIndex, aiIndex, data);
+		}, 1000);
 	}
 }
 onmessage = messageEvent => {
