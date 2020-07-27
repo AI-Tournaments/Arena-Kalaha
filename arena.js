@@ -127,10 +127,10 @@ function callAI(matchList, matchIndex, aiIndex, data){
 		};
 		ai.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
 	}else{
-		setTimeout(() => {
-			match.ai[aiIndex%2] = ai.worker;
+		ai.then(worker => {
+			match.ai[aiIndex%2] = worker;
 			callAI(matchList, matchIndex, aiIndex, data);
-		}, 1000);
+		});
 	}
 }
 onmessage = messageEvent => {
