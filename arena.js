@@ -133,8 +133,8 @@ onmessage = messageEvent => {
 	while(match < messageEvent.data.arena.settings.matchs){
 		matchList[match] = {
 			ai: [
-				createWorkerFromRemoteURL(messageEvent.data.arena.participants[0]),
-				createWorkerFromRemoteURL(messageEvent.data.arena.participants[0])
+				createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true),
+				createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true)
 			],
 			score: undefined,
 			gameboard: [],
