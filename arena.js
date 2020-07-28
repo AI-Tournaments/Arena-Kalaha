@@ -60,7 +60,7 @@ function sumBoard(gameboard){
 	ai_2 += score;
 	return {ai_1: ai_1, ai_2: ai_2};
 }
-function sumScore(scoreArray, gameboardLength, startValue){
+function sumScore(scoreArray, gameboardLength, startValue, aiList){
 	let ai_1 = 0;
 	let ai_2 = 0;
 	let length = scoreArray.length;
@@ -85,7 +85,7 @@ function sumScore(scoreArray, gameboardLength, startValue){
 		ai_1 /= length;
 		ai_2 /= length;
 	}
-	return {ai_1: ai_1, ai_2: ai_2};
+	return {ai_1: {name: aiList[0].Name, score: ai_1}, ai_2: {name: aiList[1].Name, score: ai_2}};
 }
 function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
@@ -121,8 +121,8 @@ function callAI(matchList, matchIndex, aiIndex, data){
 					scoreArray.push(match.score);
 				});
 				if(done){
-					let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue);
-					postMessage({id: data.id, score: score});
+					let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue, match.ai);
+					postMessage({id: data.id, history: match.history, score: score});
 				}
 			}else{
 				callAI(matchList, matchIndex, aiIndex, data);
