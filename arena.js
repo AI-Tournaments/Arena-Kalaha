@@ -131,7 +131,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
 	}else{
 		worker.then(worker_real => {
-			match.ai[aiIndex%2] = worker_real;
+			match.ai[aiIndex%2].worker = worker_real;
 			callAI(matchList, matchIndex, aiIndex, data);
 		});
 	}
