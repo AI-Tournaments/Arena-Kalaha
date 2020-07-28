@@ -85,7 +85,7 @@ function sumScore(scoreArray, gameboardLength, startValue, aiList){
 		ai_1 /= length;
 		ai_2 /= length;
 	}
-	return {ai_1: {name: aiList[0].name, score: ai_1}, ai_2: {name: aiList[1].name, score: ai_2}};
+	return [{name: aiList[0].name, score: ai_1}, {name: aiList[1].name, score: ai_2}];
 }
 function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
