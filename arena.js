@@ -122,7 +122,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 				});
 				if(done){
 					let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue, match.ai);
-					postMessage({id: data.id, history: match.history, score: score});
+					postMessage({type: 'done', message: {id: data.id, history: match.history, score: score}});
 				}
 			}else{
 				callAI(matchList, matchIndex, aiIndex, data);
@@ -168,4 +168,5 @@ onmessage = messageEvent => {
 		callAI(matchList, match, 0, messageEvent.data);
 		match++;
 	}
+	postMessage({type: 'pending', message: match});
 }
