@@ -90,12 +90,15 @@ function sumScore(scoreArray, gameboardLength, startValue){
 function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
 	let ai = match.ai[aiIndex%2];
-	if(ai instanceof Worker){
-		ai.onmessage = messageEvent => {
-			ai.onmessage = undefined;
+	let worker = match.ai[aiIndex%2].worker;
+	if(worker instanceof Worker){
+		worker.onmessage = messageEvent => {
+			worker.onmessage = undefined;
 			let selectedMove = messageEvent.data;
 			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 			match.gameboard = moveData['gameboard'];
+
+			match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard});
 
 			// Switch AI
 			if(!moveData['moveAgain']){
@@ -125,10 +128,10 @@ function callAI(matchList, matchIndex, aiIndex, data){
 				callAI(matchList, matchIndex, aiIndex, data);
 			}
 		};
-		ai.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
+		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
 	}else{
-		ai.then(worker => {
-			match.ai[aiIndex%2] = worker;
+		worker.then(worker_real => {
+			match.ai[aiIndex%2] = worker_real;
 			callAI(matchList, matchIndex, aiIndex, data);
 		});
 	}
@@ -140,10 +143,16 @@ onmessage = messageEvent => {
 	while(match < messageEvent.data.arena.settings.matchs){
 		matchList[match] = {
 			ai: [
-				createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true),
-				createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true)
+				{
+					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true),
+					name: messageEvent.data.arena.participants[0]
+				},{
+					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true),
+					name: messageEvent.data.arena.participants[0]
+				}
 			],
 			score: undefined,
+			history: [],
 			gameboard: [],
 			settings: messageEvent.data.arena.settings
 		};
