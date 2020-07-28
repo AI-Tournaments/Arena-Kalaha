@@ -98,7 +98,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 			match.gameboard = moveData['gameboard'];
 
-			match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard});
+			match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard}); // TODO: copy match.gameboard
 
 			// Switch AI
 			if(!moveData['moveAgain']){
@@ -144,11 +144,11 @@ onmessage = messageEvent => {
 		matchList[match] = {
 			ai: [
 				{
-					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true),
-					name: messageEvent.data.arena.participants[0]
+					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0].src, true),
+					name: messageEvent.data.arena.participants[0].name
 				},{
-					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0], true),
-					name: messageEvent.data.arena.participants[0]
+					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0].src, true),
+					name: messageEvent.data.arena.participants[0].name
 				}
 			],
 			score: undefined,
