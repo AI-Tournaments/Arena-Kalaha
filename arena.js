@@ -98,7 +98,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 			match.gameboard = moveData['gameboard'];
 
-			match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard}); // TODO: copy match.gameboard
+			match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard.slice()});
 
 			// Switch AI
 			if(!moveData['moveAgain']){
