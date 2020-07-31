@@ -137,10 +137,16 @@ function callAI(matchList, matchIndex, aiIndex, data){
 	}
 }
 onmessage = messageEvent => {
-	// Init simulation
+	let gameboard = [];
+	for(let i = 0; i < 2; i++){
+		for(let n=0; n < messageEvent.data.arena.settings.boardLength; n++){
+			gameboard.push(messageEvent.data.arena.settings.startValue);
+		}
+		gameboard.push(0);
+	}
 	let matchList = [];
-	for (const participant_1 of messageEvent.data.arena.participants){
-		for (const participant_2 of messageEvent.data.arena.participants){
+	for(const participant_1 of messageEvent.data.arena.participants){
+		for(const participant_2 of messageEvent.data.arena.participants){
 			if(participant_1 !== participant_2){
 				let match = [];
 				matchList.push(match);
@@ -157,17 +163,9 @@ onmessage = messageEvent => {
 						],
 						score: undefined,
 						history: [],
-						gameboard: [],
+						gameboard: gameboard.slice(),
 						settings: messageEvent.data.arena.settings
 					});
-			
-					// Init gameboard
-					for(let i = 0; i < 2; i++){
-						for(let n=0; n < messageEvent.data.arena.settings.boardLength; n++){
-							matchList[match].gameboard.push(messageEvent.data.arena.settings.startValue);
-						}
-						matchList[match].gameboard.push(0);
-					}
 			
 					callAI(match, match.length-1, 0, messageEvent.data);
 				}
