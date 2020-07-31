@@ -91,7 +91,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
 	let worker = match.ai[aiIndex%2].worker;
 	if(worker instanceof Worker){
-		if(worker.onmessage === undefined){
+		if(worker.onmessage === null){
 			worker.onmessage = messageEvent => {
 				worker.onmessage = undefined;
 				let selectedMove = messageEvent.data;
