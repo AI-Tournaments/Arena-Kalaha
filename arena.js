@@ -89,45 +89,49 @@ function sumScore(scoreArray, gameboardLength, startValue, aiList){
 }
 function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
-	let ai = match.ai[aiIndex%2];
 	let worker = match.ai[aiIndex%2].worker;
 	if(worker instanceof Worker){
-		worker.onmessage = messageEvent => {
-			worker.onmessage = undefined;
-			let selectedMove = messageEvent.data;
-			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
-			match.gameboard = moveData['gameboard'];
+		if(worker.onmessage === undefined){
+			worker.onmessage = messageEvent => {
+				worker.onmessage = undefined;
+				let selectedMove = messageEvent.data;
+				let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
+				match.gameboard = moveData['gameboard'];
 
-			match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard.slice()});
+				match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard.slice()});
 
-			// Switch AI
-			if(!moveData['moveAgain']){
-				aiIndex++;
-				for(let i=0; i < match.gameboard.length/2; i++){
-					match.gameboard.push(match.gameboard.shift());
-				}
-			}
-			if(isGameFinished(match.gameboard)){
-				if(aiIndex%2){
+				// Switch AI
+				if(!moveData['moveAgain']){
+					aiIndex++;
 					for(let i=0; i < match.gameboard.length/2; i++){
 						match.gameboard.push(match.gameboard.shift());
 					}
 				}
-				match.score = sumBoard(match.gameboard);
-				let done = true;
-				let scoreArray = [];
-				matchList.forEach(match => {
-					done &= match.score !== undefined;
-					scoreArray.push(match.score);
-				});
-				if(done){
-					let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue, match.ai);
-					postMessage({type: 'done', message: {id: data.id, history: match.history, score: score}});
+				if(isGameFinished(match.gameboard)){
+					if(aiIndex%2){
+						for(let i=0; i < match.gameboard.length/2; i++){
+							match.gameboard.push(match.gameboard.shift());
+						}
+					}
+					match.score = sumBoard(match.gameboard);
+					let done = true;
+					let scoreArray = [];
+					matchList.forEach(match => {
+						done &= match.score !== undefined;
+						scoreArray.push(match.score);
+					});
+					if(done){
+						let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue, match.ai);
+						postMessage({type: 'Done', message: {id: data.id, history: match.history, score: score}});
+					}
+				}else{
+					callAI(matchList, matchIndex, aiIndex, data);
 				}
-			}else{
-				callAI(matchList, matchIndex, aiIndex, data);
+			};
+			worker.onerror = error => {
+				postMessage({type: 'DNF', message: {error: error}});
 			}
-		};
+		}
 		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
 	}else{
 		worker.then(worker_real => {
@@ -166,11 +170,10 @@ onmessage = messageEvent => {
 						gameboard: gameboard.slice(),
 						settings: messageEvent.data.arena.settings
 					});
-			
 					callAI(match, match.length-1, 0, messageEvent.data);
 				}
 			}
 		}
 	}
-	postMessage({type: 'pending', message: match});
+	postMessage({type: 'Pending', message: matchList.length});
 }
