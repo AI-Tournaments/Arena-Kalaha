@@ -139,34 +139,40 @@ function callAI(matchList, matchIndex, aiIndex, data){
 onmessage = messageEvent => {
 	// Init simulation
 	let matchList = [];
-	let match = 0;
-	while(match < messageEvent.data.arena.settings.matchs){
-		matchList[match] = {
-			ai: [
-				{
-					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0].src, true),
-					name: messageEvent.data.arena.participants[0].name
-				},{
-					worker: createWorkerFromRemoteURL(messageEvent.data.arena.participants[0].src, true),
-					name: messageEvent.data.arena.participants[0].name
+	for (const participant_1 of messageEvent.data.arena.participants){
+		for (const participant_2 of messageEvent.data.arena.participants){
+			if(participant_1 !== participant_2){
+				let match = [];
+				matchList.push(match);
+				while(match.length < messageEvent.data.arena.settings.averageOf){
+					match.push({
+						ai: [
+							{
+								worker: createWorkerFromRemoteURL(participant_1.src, true),
+								name: participant_1.name
+							},{
+								worker: createWorkerFromRemoteURL(participant_2.src, true),
+								name: participant_2.name
+							}
+						],
+						score: undefined,
+						history: [],
+						gameboard: [],
+						settings: messageEvent.data.arena.settings
+					});
+			
+					// Init gameboard
+					for(let i = 0; i < 2; i++){
+						for(let n=0; n < messageEvent.data.arena.settings.boardLength; n++){
+							matchList[match].gameboard.push(messageEvent.data.arena.settings.startValue);
+						}
+						matchList[match].gameboard.push(0);
+					}
+			
+					callAI(match, match.length-1, 0, messageEvent.data);
 				}
-			],
-			score: undefined,
-			history: [],
-			gameboard: [],
-			settings: messageEvent.data.arena.settings
-		};
-
-		// Init gameboard
-		for(let i = 0; i < 2; i++){
-			for(let n=0; n < messageEvent.data.arena.settings.boardLength; n++){
-				matchList[match].gameboard.push(messageEvent.data.arena.settings.startValue);
 			}
-			matchList[match].gameboard.push(0);
 		}
-
-		callAI(matchList, match, 0, messageEvent.data);
-		match++;
 	}
 	postMessage({type: 'pending', message: match});
 }
