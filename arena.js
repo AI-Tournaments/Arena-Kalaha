@@ -89,7 +89,8 @@ function sumScore(scoreArray, gameboardLength, startValue, aiList){
 }
 function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
-	let worker = match.ai[aiIndex%2].worker;
+	let participant = match.ai[aiIndex%2];
+	let worker = participant.worker;
 	if(worker instanceof Worker){
 		if(worker.onmessage === null){
 			worker.onmessage = messageEvent => {
@@ -128,8 +129,8 @@ function callAI(matchList, matchIndex, aiIndex, data){
 					callAI(matchList, matchIndex, aiIndex, data);
 				}
 			};
-			worker.onerror = error => {
-				postMessage({type: 'DNF', message: {error: error}});
+			worker.onerror = errorEvent => {
+				postMessage({type: 'DNF', name: participant.name, message: {error: errorEvent.message}});
 			}
 		}
 		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
