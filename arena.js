@@ -174,10 +174,10 @@ onmessage = messageEvent => {
 				});
 				callAI(matchList, matchList.length-1, 0, messageEvent.data);
 			}
+			let temp = participant_1;
+			participant_1 = participant_2;
+			participant_2 = temp;
 		}
-		let temp = participant_1;
-		participant_1 = participant_2;
-		participant_2 = temp;
+		postMessage({type: 'Pending', message: matchList.length});
 	}
-	postMessage({type: 'Pending', message: matchList.length});
 }
