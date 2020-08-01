@@ -87,7 +87,7 @@ function sumScore(scoreArray, gameboardLength, startValue, aiList){
 	}
 	return [{name: aiList[0].name, score: ai_1}, {name: aiList[1].name, score: ai_2}];
 }
-function callAI(matchList, matchIndex, aiIndex, data, id){
+function callAI(matchList, matchIndex, aiIndex, data){
 	let match = matchList[matchIndex];
 	let participant = match.ai[aiIndex%2];
 	let worker = participant.worker;
@@ -123,27 +123,27 @@ function callAI(matchList, matchIndex, aiIndex, data, id){
 					});
 					if(done){
 						let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue, match.ai);
-						postMessage({type: 'Done', message: {id: id, history: match.history, score: score}});
+						postMessage({type: 'Done', message: {history: match.history, score: score}});
 					}
 				}else{
-					callAI(matchList, matchIndex, aiIndex, data, id);
+					callAI(matchList, matchIndex, aiIndex, data);
 				}
 			};
 			worker.onerror = errorEvent => {
-				postMessage({type: 'DNF', message: {id: id, name: participant.name, error: errorEvent.message}});
+				postMessage({type: 'DNF', message: {name: participant.name, error: errorEvent.message}});
 			}
 		}
-		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: id});
+		worker.postMessage({gameboard: match.gameboard, settings: match.settings});
 	}else{
 		worker.then(worker_real => {
 			match.ai[aiIndex%2].worker = worker_real;
-			callAI(matchList, matchIndex, aiIndex, data, id);
+			callAI(matchList, matchIndex, aiIndex, data);
 		});
 	}
 }
 onmessage = messageEvent => {
 	if(messageEvent.data.arena.participants.length !== 2){
-		postMessage({type: 'Error', message: {id: id, error: 'This arena requiers 2 participants. ' + messageEvent.data.arena.participants.length + ' was givven.'}});
+		postMessage({type: 'Error', message: {error: 'This arena requiers 2 participants. ' + messageEvent.data.arena.participants.length + ' was givven.'}});
 	}else{
 		let gameboard = [];
 		for(let i = 0; i < 2; i++){
@@ -153,14 +153,11 @@ onmessage = messageEvent => {
 			gameboard.push(0);
 		}
 		let matchList = [];
-		let id = 0;
 		let participant_1 = messageEvent.data.arena.participants[0];
 		let participant_2 = messageEvent.data.arena.participants[1];
-		let match = [];
-		matchList.push(match);
 		for(let i = 0; i < 2; i++){
-			while(match.length < messageEvent.data.arena.settings.averageOf){
-				match.push({
+			while(matchList.length < messageEvent.data.arena.settings.averageOf){
+				matchList.push({
 					ai: [
 						{
 							worker: createWorkerFromRemoteURL(participant_1.src, true),
@@ -175,12 +172,12 @@ onmessage = messageEvent => {
 					gameboard: gameboard.slice(),
 					settings: messageEvent.data.arena.settings
 				});
-				callAI(match, match.length-1, 0, messageEvent.data, messageEvent.data.id + id++);
+				callAI(matchList, matchList.length-1, 0, messageEvent.data);
 			}
 		}
 		let temp = participant_1;
 		participant_1 = participant_2;
 		participant_2 = temp;
 	}
-	postMessage({type: 'Pending', message: id});
+	postMessage({type: 'Pending', message: matchList.length});
 }
