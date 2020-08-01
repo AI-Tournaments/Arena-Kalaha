@@ -87,7 +87,7 @@ function sumScore(scoreArray, gameboardLength, startValue, aiList){
 	}
 	return [{name: aiList[0].name, score: ai_1}, {name: aiList[1].name, score: ai_2}];
 }
-function callAI(matchList, matchIndex, aiIndex, data){
+function callAI(matchList, matchIndex, aiIndex, data, id){
 	let match = matchList[matchIndex];
 	let participant = match.ai[aiIndex%2];
 	let worker = participant.worker;
@@ -123,21 +123,21 @@ function callAI(matchList, matchIndex, aiIndex, data){
 					});
 					if(done){
 						let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.startValue, match.ai);
-						postMessage({type: 'Done', message: {id: data.id, history: match.history, score: score}});
+						postMessage({type: 'Done', message: {id: id, history: match.history, score: score}});
 					}
 				}else{
-					callAI(matchList, matchIndex, aiIndex, data);
+					callAI(matchList, matchIndex, aiIndex, data, id);
 				}
 			};
 			worker.onerror = errorEvent => {
-				postMessage({type: 'DNF', message: {id: data.id, name: participant.name, error: errorEvent.message}});
+				postMessage({type: 'DNF', message: {id: id, name: participant.name, error: errorEvent.message}});
 			}
 		}
-		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
+		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: id});
 	}else{
 		worker.then(worker_real => {
 			match.ai[aiIndex%2].worker = worker_real;
-			callAI(matchList, matchIndex, aiIndex, data);
+			callAI(matchList, matchIndex, aiIndex, data, id);
 		});
 	}
 }
@@ -150,6 +150,7 @@ onmessage = messageEvent => {
 		gameboard.push(0);
 	}
 	let matchList = [];
+	let id = 0;
 	for(const participant_1 of messageEvent.data.arena.participants){
 		for(const participant_2 of messageEvent.data.arena.participants){
 			if(participant_1 !== participant_2){
@@ -171,7 +172,7 @@ onmessage = messageEvent => {
 						gameboard: gameboard.slice(),
 						settings: messageEvent.data.arena.settings
 					});
-					callAI(match, match.length-1, 0, messageEvent.data);
+					callAI(match, match.length-1, 0, messageEvent.data, messageEvent.data.id + id++);
 				}
 			}
 		}
