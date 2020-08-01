@@ -130,7 +130,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 				}
 			};
 			worker.onerror = errorEvent => {
-				postMessage({type: 'DNF', name: participant.name, message: {error: errorEvent.message}});
+				postMessage({type: 'DNF', message: {name: participant.name, error: errorEvent.message}});
 			}
 		}
 		worker.postMessage({gameboard: match.gameboard, settings: match.settings, id: data.id});
