@@ -69,14 +69,14 @@ function sumScore(scoreArray, gameboardLength, startValue, aiList){
 	let localScore_ai_2 = undefined;
 	let errorFound = false;
 	for(const score of scoreArray){
-		localScore_ai_1 = score['ai_1'];
-		localScore_ai_2 = score['ai_2'];
+		localScore_ai_1 = score.ai_1;
+		localScore_ai_2 = score.ai_2;
 		errorFound = boardValue != localScore_ai_1 + localScore_ai_2;
 		if(errorFound){
 			break;
 		}
-		ai_1 += score['ai_1'];
-		ai_2 += score['ai_2'];
+		ai_1 += score.ai_1;
+		ai_2 += score.ai_2;
 	}
 	if(errorFound){
 		ai_1 = 'Error';
@@ -97,12 +97,12 @@ function callAI(matchList, matchIndex, aiIndex, data){
 				worker.onmessage = undefined;
 				let selectedMove = messageEvent.data;
 				let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
-				match.gameboard = moveData['gameboard'];
+				match.gameboard = moveData.gameboard;
 
 				match.history.push({aiIndex: aiIndex%2, gameboard: match.gameboard.slice()});
 
 				// Switch AI
-				if(!moveData['moveAgain']){
+				if(!moveData.moveAgain){
 					aiIndex++;
 					for(let i=0; i < match.gameboard.length/2; i++){
 						match.gameboard.push(match.gameboard.shift());
@@ -133,7 +133,11 @@ function callAI(matchList, matchIndex, aiIndex, data){
 				postMessage({type: 'DNF', message: {name: participant.name, error: errorEvent.message}});
 			}
 		}
-		worker.postMessage({gameboard: match.gameboard, settings: match.settings});
+		worker.postMessage({
+			gameboard: match.gameboard,
+			settings: match.settings,
+			opponent: messageEvent.data.arena.settings.displayOpponent ? match.ai[(aiIndex+1)%2].name : null
+		});
 	}else{
 		worker.then(worker_real => {
 			match.ai[aiIndex%2].worker = worker_real;
