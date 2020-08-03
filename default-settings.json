@@ -1,9 +1,0 @@
-{
-	"boardLength": 6,
-	"startValue": 4,
-	"averageOf": 4,
-	"displayOpponent": false,
-	"rules": {
-		"empty_capture": true
-	}
-}
