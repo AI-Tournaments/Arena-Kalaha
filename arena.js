@@ -31,7 +31,7 @@ function doMove(gameboard, move, rules){
 			gameboard[move] += 1;
 		}
 	}
-	if(!rules.includes('disable_empty_capture')){
+	if(rules.empty_capture){
 		if(move < ownStore && 1 === gameboard[move]){
 			let score = gameboard[move];
 			gameboard[move] = 0;

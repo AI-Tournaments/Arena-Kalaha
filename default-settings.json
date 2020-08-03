@@ -4,6 +4,6 @@
 	"averageOf": 4,
 	"displayOpponent": false,
 	"rules": {
-		"disable_empty_capture": false
+		"empty_capture": true
 	}
 }
