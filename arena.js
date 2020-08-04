@@ -136,7 +136,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 		worker.postMessage({
 			gameboard: match.gameboard,
 			settings: match.settings,
-			opponent: messageEvent.data.arena.settings.general.displayOpponents ? match.ai[(aiIndex+1)%2].name : null
+			opponent: match.settings.general.displayOpponents ? match.ai[(aiIndex+1)%2].name : null
 		});
 	}else{
 		worker.then(worker_real => {
