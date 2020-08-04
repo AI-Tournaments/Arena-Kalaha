@@ -136,7 +136,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 		worker.postMessage({
 			gameboard: match.gameboard,
 			settings: match.settings,
-			opponent: messageEvent.data.arena.settings.displayOpponent ? match.ai[(aiIndex+1)%2].name : null
+			opponent: messageEvent.data.arena.settings.general.displayOpponents ? match.ai[(aiIndex+1)%2].name : null
 		});
 	}else{
 		worker.then(worker_real => {
@@ -153,8 +153,8 @@ onmessage = messageEvent => {
 	}else{
 		let gameboard = [];
 		for(let i = 0; i < 2; i++){
-			for(let n=0; n < messageEvent.data.arena.settings.boardLength; n++){
-				gameboard.push(messageEvent.data.arena.settings.startValue);
+			for(let n=0; n < messageEvent.data.arena.settings.gameboard.boardLength; n++){
+				gameboard.push(messageEvent.data.arena.settings.gameboard.startValue);
 			}
 			gameboard.push(0);
 		}
@@ -162,7 +162,7 @@ onmessage = messageEvent => {
 		let participant_1 = messageEvent.data.arena.participants[0][0];
 		let participant_2 = messageEvent.data.arena.participants[1][0];
 		for(let i = 0; i < 2; i++){
-			while(matchList.length < messageEvent.data.arena.settings.averageOf){
+			while(matchList.length < messageEvent.data.arena.settings.gameboard.averageOf){
 				matchList.push({
 					ai: [
 						{
