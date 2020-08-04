@@ -166,10 +166,10 @@ onmessage = messageEvent => {
 				matchList.push({
 					ai: [
 						{
-							worker: createWorkerFromRemoteURL(participant_1.src, true),
+							worker: createWorkerFromRemoteURL(participant_1.url, true),
 							name: participant_1.name
 						},{
-							worker: createWorkerFromRemoteURL(participant_2.src, true),
+							worker: createWorkerFromRemoteURL(participant_2.url, true),
 							name: participant_2.name
 						}
 					],
