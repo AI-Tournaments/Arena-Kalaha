@@ -162,7 +162,7 @@ onmessage = messageEvent => {
 		let participant_1 = messageEvent.data.arena.participants[0][0];
 		let participant_2 = messageEvent.data.arena.participants[1][0];
 		for(let i = 0; i < 2; i++){
-			while(matchList.length < messageEvent.data.arena.settings.gameboard.averageOf){
+			while(matchList.length < messageEvent.data.arena.settings.general.averageOf){
 				matchList.push({
 					ai: [
 						{
