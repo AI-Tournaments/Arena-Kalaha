@@ -146,44 +146,38 @@ function callAI(matchList, matchIndex, aiIndex, data){
 	}
 }
 onmessage = messageEvent => {
-	if(messageEvent.data.arena.participants.length !== 2
-	&& messageEvent.data.arena.participants[0].length !== 1
-	&& messageEvent.data.arena.participants[1].length !== 1){
-		postMessage({type: 'Error', message: {error: 'This arena requiers 2 participants. ' + messageEvent.data.arena.participants.flat().length + '/' + messageEvent.data.arena.participants.length + ' was givven.'}});
-	}else{
-		let gameboard = [];
-		for(let i = 0; i < 2; i++){
-			for(let n=0; n < messageEvent.data.arena.settings.gameboard.boardLength; n++){
-				gameboard.push(messageEvent.data.arena.settings.gameboard.startValue);
-			}
-			gameboard.push(0);
+	let gameboard = [];
+	for(let i = 0; i < 2; i++){
+		for(let n=0; n < messageEvent.data.arena.settings.gameboard.boardLength; n++){
+			gameboard.push(messageEvent.data.arena.settings.gameboard.startValue);
 		}
-		let matchList = [];
-		let participant_1 = messageEvent.data.arena.participants[0][0];
-		let participant_2 = messageEvent.data.arena.participants[1][0];
-		for(let i = 0; i < 2; i++){
-			while(matchList.length < messageEvent.data.arena.settings.general.averageOf){
-				matchList.push({
-					ai: [
-						{
-							worker: createWorkerFromRemoteURL(participant_1.url, true),
-							name: participant_1.name
-						},{
-							worker: createWorkerFromRemoteURL(participant_2.url, true),
-							name: participant_2.name
-						}
-					],
-					score: undefined,
-					history: [],
-					gameboard: gameboard.slice(),
-					settings: messageEvent.data.arena.settings
-				});
-				callAI(matchList, matchList.length-1, 0, messageEvent.data);
-			}
-			let temp = participant_1;
-			participant_1 = participant_2;
-			participant_2 = temp;
-		}
-		postMessage({type: 'Pending', message: matchList.length});
+		gameboard.push(0);
 	}
+	let matchList = [];
+	let participant_1 = messageEvent.data.arena.participants[0][0];
+	let participant_2 = messageEvent.data.arena.participants[1][0];
+	for(let i = 0; i < 2; i++){
+		while(matchList.length < messageEvent.data.arena.settings.general.averageOf){
+			matchList.push({
+				ai: [
+					{
+						worker: createWorkerFromRemoteURL(participant_1.url, true),
+						name: participant_1.name
+					},{
+						worker: createWorkerFromRemoteURL(participant_2.url, true),
+						name: participant_2.name
+					}
+				],
+				score: undefined,
+				history: [],
+				gameboard: gameboard.slice(),
+				settings: messageEvent.data.arena.settings
+			});
+			callAI(matchList, matchList.length-1, 0, messageEvent.data);
+		}
+		let temp = participant_1;
+		participant_1 = participant_2;
+		participant_2 = temp;
+	}
+	postMessage({type: 'Pending', message: matchList.length});
 }
