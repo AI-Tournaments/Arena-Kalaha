@@ -146,8 +146,10 @@ function callAI(matchList, matchIndex, aiIndex, data){
 	}
 }
 onmessage = messageEvent => {
-	if(messageEvent.data.arena.participants.length !== 2){
-		postMessage({type: 'Error', message: {error: 'This arena requiers 2 participants. ' + messageEvent.data.arena.participants.length + ' was givven.'}});
+	if(messageEvent.data.arena.participants.length !== 2
+	&& messageEvent.data.arena.participants[0].length !== 1
+	&& messageEvent.data.arena.participants[1].length !== 1){
+		postMessage({type: 'Error', message: {error: 'This arena requiers 2 participants. ' + messageEvent.data.arena.participants.flat().length + '/' + messageEvent.data.arena.participants.length + ' was givven.'}});
 	}else{
 		let gameboard = [];
 		for(let i = 0; i < 2; i++){
@@ -157,8 +159,8 @@ onmessage = messageEvent => {
 			gameboard.push(0);
 		}
 		let matchList = [];
-		let participant_1 = messageEvent.data.arena.participants[0];
-		let participant_2 = messageEvent.data.arena.participants[1];
+		let participant_1 = messageEvent.data.arena.participants[0][0];
+		let participant_2 = messageEvent.data.arena.participants[1][0];
 		for(let i = 0; i < 2; i++){
 			while(matchList.length < messageEvent.data.arena.settings.averageOf){
 				matchList.push({
