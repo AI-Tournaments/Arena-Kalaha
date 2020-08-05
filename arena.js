@@ -134,7 +134,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 				}
 			};
 			worker.onerror = errorEvent => {
-				postMessage({type: 'DNF', message: {name: participant.name, error: errorEvent.message}});
+				postMessage({type: 'Aborted', message: {name: participant.name, error: errorEvent.message}});
 			}
 		}
 		worker.lastCalled = new Date().getTime();
@@ -156,7 +156,7 @@ function executionWatcher(executionLimit=1000, participants=[]){
 		if(participant.worker.lastCalled === null || executionTimeViolation){
 			participants.splice(participants.indexOf(participant), 1);
 			if(executionTimeViolation){
-				postMessage({type: 'DNF', message: {name: participant.name, error: 'Execution time violation.'}});
+				postMessage({type: 'Aborted', message: {name: participant.name, error: 'Execution time violation.'}});
 				participant.worker.terminate();
 			}
 		}
