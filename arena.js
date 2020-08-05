@@ -176,26 +176,24 @@ onmessage = messageEvent => {
 	let participant_1 = messageEvent.data.arena.participants[0][0];
 	let participant_2 = messageEvent.data.arena.participants[1][0];
 	for(let i = 0; i < 2; i++){
-		while(matchList.length < messageEvent.data.arena.settings.general.averageOf){
-			let match = {
-				participants: [
-					{
-						worker: createWorkerFromRemoteURL(participant_1.url, true),
-						name: participant_1.name
-					},{
-						worker: createWorkerFromRemoteURL(participant_2.url, true),
-						name: participant_2.name
-					}
-				],
-				score: undefined,
-				history: [],
-				gameboard: gameboard.slice(),
-				settings: messageEvent.data.arena.settings
-			};
-			participants = participants.concat(match.participants);
-			matchList.push(match);
-			callAI(matchList, matchList.length-1, 0, messageEvent.data);
-		}
+		let match = {
+			participants: [
+				{
+					worker: createWorkerFromRemoteURL(participant_1.url, true),
+					name: participant_1.name
+				},{
+					worker: createWorkerFromRemoteURL(participant_2.url, true),
+					name: participant_2.name
+				}
+			],
+			score: undefined,
+			history: [],
+			gameboard: gameboard.slice(),
+			settings: messageEvent.data.arena.settings
+		};
+		participants = participants.concat(match.participants);
+		matchList.push(match);
+		callAI(matchList, matchList.length-1, 0, messageEvent.data);
 		let temp = participant_1;
 		participant_1 = participant_2;
 		participant_2 = temp;
