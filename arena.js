@@ -192,7 +192,7 @@ onmessage = messageEvent => {
 				gameboard: gameboard.slice(),
 				settings: messageEvent.data.arena.settings
 			};
-			participants.concat(match.participants);
+			participants = participants.concat(match.participants);
 			matchList.push(match);
 			callAI(matchList, matchList.length-1, 0, messageEvent.data);
 		}
