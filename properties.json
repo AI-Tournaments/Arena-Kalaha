@@ -7,7 +7,8 @@
 	"settings": {
 		"general": {
 			"averageOf": 4,
-			"displayOpponents": false
+			"displayOpponents": false,
+			"timelimit_ms": 1000
 		},
 		"gameboard": {
 			"boardLength": 6,
