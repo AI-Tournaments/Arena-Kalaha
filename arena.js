@@ -94,7 +94,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 	if(worker instanceof Worker){
 		if(worker.onmessage === null){
 			worker.onmessage = messageEvent => {
-				worker_real.lastCalled = undefined;
+				worker.lastCalled = undefined;
 				worker.onmessage = undefined;
 				let selectedMove = messageEvent.data;
 				let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
@@ -137,7 +137,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 				postMessage({type: 'DNF', message: {name: participant.name, error: errorEvent.message}});
 			}
 		}
-		worker_real.lastCalled = new Date().getTime();
+		worker.lastCalled = new Date().getTime();
 		worker.postMessage({
 			gameboard: match.gameboard,
 			settings: match.settings,
@@ -161,7 +161,7 @@ function executionWatcher(executionLimit=1000, participants=[]){
 			}
 		}
 	});
-	setTimeout(executionWatcher, executionLimit, participants, executionLimit);
+	setTimeout(executionWatcher, executionLimit, executionLimit, participants);
 }
 onmessage = messageEvent => {
 	let gameboard = [];
