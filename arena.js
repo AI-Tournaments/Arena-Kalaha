@@ -127,7 +127,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 					});
 					if(done){
 						let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-						postMessage({type: 'Score', message: {score: score, settings: match.settings, history: match.history}});
+						postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: match.history}});
 					}
 				}else{
 					callAI(matchList, matchIndex, aiIndex, data);
