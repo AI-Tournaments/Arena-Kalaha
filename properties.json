@@ -6,7 +6,7 @@
 	},
 	"settings": {
 		"general": {
-			"averageOf": 4,
+			"averageOf": 1,
 			"displayOpponents": false,
 			"timelimit_ms": 1000
 		},
