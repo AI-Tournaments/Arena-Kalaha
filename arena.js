@@ -88,7 +88,7 @@ function sumScore(scoreArray, gameboardLength, startValue, participants){
 	}
 	return [{name: participants[0].name, score: ai_1}, {name: participants[1].name, score: ai_2}];
 }
-function callAI(matchList, matchIndex, aiIndex, data){
+function callParticipant(matchList, matchIndex, aiIndex){
 	let match = matchList[matchIndex];
 	let participant = match.participants[aiIndex%2];
 	let worker = participant.worker;
@@ -131,7 +131,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 						postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: match.history}});
 					}
 				}else{
-					callAI(matchList, matchIndex, aiIndex, data);
+					callParticipant(matchList, matchIndex, aiIndex);
 				}
 			};
 			worker.onerror = errorEvent => {
@@ -147,7 +147,7 @@ function callAI(matchList, matchIndex, aiIndex, data){
 	}else{
 		worker.then(worker_real => {
 			match.participants[aiIndex%2].worker = worker_real;
-			callAI(matchList, matchIndex, aiIndex, data);
+			callParticipant(matchList, matchIndex, aiIndex);
 		});
 	}
 }
@@ -194,7 +194,7 @@ onmessage = messageEvent => {
 		};
 		participants = participants.concat(match.participants);
 		matchList.push(match);
-		callAI(matchList, matchList.length-1, 0, messageEvent.data);
+		callParticipant(matchList, matchList.length-1, 0);
 		let temp = participant_1;
 		participant_1 = participant_2;
 		participant_2 = temp;
