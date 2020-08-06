@@ -122,13 +122,15 @@ function callParticipant(matchList, matchIndex, aiIndex){
 					match.score = sumBoard(match.gameboard);
 					let done = true;
 					let scoreArray = [];
+					let historyArray = [];
 					matchList.forEach(match => {
 						done &= match.score !== undefined;
 						scoreArray.push(match.score);
+						historyArray.push(match.history);
 					});
 					if(done){
 						let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-						postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: match.history}});
+						postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: historyArray}});
 					}
 				}else{
 					callParticipant(matchList, matchIndex, aiIndex);
