@@ -101,7 +101,7 @@ function callParticipant(matchList, matchIndex, aiIndex){
 				let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 				match.gameboard = moveData.gameboard;
 
-				match.history.push({participant: participant.name, gameboard: match.gameboard.slice()});
+				match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
 
 				// Switch AI
 				if(!moveData.moveAgain){
