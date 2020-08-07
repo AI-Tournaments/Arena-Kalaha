@@ -169,7 +169,7 @@ function executionWatcher(executionLimit=1000, participants=[]){
 onmessage = messageEvent => {
 	let gameboard = [];
 	let matches = messageEvent.data.arena.settings.gameboard.playBothSides ? 2 : 1;
-	for(let i = 0; i < matches; i++){
+	for(let i = 0; i < 2; i++){
 		for(let n=0; n < messageEvent.data.arena.settings.gameboard.boardLength; n++){
 			gameboard.push(messageEvent.data.arena.settings.gameboard.startValue);
 		}
