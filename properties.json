@@ -5,7 +5,7 @@
 			"teams": {"min": 2, "max": 2},
 			"participantsPerTeam": {"min": 1, "max": 1}
 		},
-		"symmetric": true
+		"symmetric": false
 	},
 	"settings": {
 		"general": {
@@ -16,7 +16,7 @@
 		"gameboard": {
 			"boardLength": 6,
 			"startValue": 4,
-			"playBothSides": true
+			"playBothSides": false
 		},
 		"rules": {
 			"empty_capture": true
