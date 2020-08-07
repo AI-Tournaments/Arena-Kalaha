@@ -1,6 +1,6 @@
 'use strict'
 importScripts('https://chrisacrobat.github.io/js-compilation/CreateWorkerFromRemoteURL.js');
-importScripts('https://ai-tournaments.github.io/AI-Tournaments-Website/Arena/participant.js');
+importScripts('https://ai-tournaments.github.io/AI-Tournaments-Website/Arena/participants.js');
 function isGameFinished(gameboard){
 	let ai_1 = 0;
 	let ai_2 = 0;
