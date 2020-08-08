@@ -37,7 +37,7 @@ function doMove(gameboard, move, rules){
 		if(move < ownStore && 1 === gameboard[move]){
 			let score = gameboard[move];
 			gameboard[move] = 0;
-			let oppositeSide = size - move - 1;
+			let oppositeSide = size - move - 2;
 			score += gameboard[oppositeSide];
 			gameboard[oppositeSide] = 0;
 			gameboard[ownStore] += score;
