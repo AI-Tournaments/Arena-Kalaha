@@ -48,7 +48,7 @@ function doMove(gameboard, move, rules){
 function sumBoard(gameboard){
 	let data = [0,0];
 	for(let i = 0; i < gameboard.length; i++){
-		data[i < gameboard.length/2 ? 0 : 1] = gameboard[i];
+		data[i < gameboard.length/2 ? 0 : 1] += gameboard[i];
 	}
 	return data;
 }
