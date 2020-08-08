@@ -46,9 +46,9 @@ function doMove(gameboard, move, rules){
 	return {moveAgain: move === ownStore, gameboard, gameboard};
 }
 function sumBoard(gameboard){
-	let data = {ai_1: 0, ai_2: 0};
+	let data = [0,0];
 	for(let i = 0; i < gameboard.length; i++){
-		(i < gameboard.length/2 ? data.ai_1 : data.ai_2) = gameboard[i];
+		data[i < gameboard.length/2 ? 0 : 1] = gameboard[i];
 	}
 	return data;
 }
@@ -61,14 +61,14 @@ function sumScore(scoreArray, gameboardLength, startValue, participants){
 	let localScore_ai_2 = undefined;
 	let errorFound = false;
 	for(const score of scoreArray){
-		localScore_ai_1 = score.ai_1;
-		localScore_ai_2 = score.ai_2;
+		localScore_ai_1 = score[0];
+		localScore_ai_2 = score[1];
 		errorFound = boardValue != localScore_ai_1 + localScore_ai_2;
 		if(errorFound){
 			break;
 		}
-		ai_1 += score.ai_1;
-		ai_2 += score.ai_2;
+		ai_1 += score[0];
+		ai_2 += score[1];
 	}
 	if(errorFound){
 		ai_1 = 'Error';
