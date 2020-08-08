@@ -46,22 +46,11 @@ function doMove(gameboard, move, rules){
 	return {moveAgain: move === ownStore, gameboard, gameboard};
 }
 function sumBoard(gameboard){
-	let score = 0;
-	let length = gameboard.length;
-	let lengthHalf = (length/2)-1;
-	length--;
-	let ai_1 = gameboard[lengthHalf];
-	let ai_2 = gameboard[length];
-	for(let i = 0; i < length; i++){
-		if(i === lengthHalf){
-			ai_1 += score;
-			i++;
-			score = 0;
-		}
-		score += gameboard[i];
+	let data = {ai_1: 0, ai_2: 0};
+	for(let i = 0; i < gameboard.length; i++){
+		(i < gameboard.length/2 ? data.ai_1 : data.ai_2) = gameboard[i];
 	}
-	ai_2 += score;
-	return {ai_1: ai_1, ai_2: ai_2};
+	return data;
 }
 function sumScore(scoreArray, gameboardLength, startValue, participants){
 	let ai_1 = 0;
