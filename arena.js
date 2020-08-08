@@ -6,6 +6,7 @@ function isGameFinished(gameboard){
 	let ai_2 = 0;
 	let length = gameboard.length;
 	let lengthHalf = (length/2)-1;
+	length--;
 	for(let i = 0; i < length; i++){
 		if(i === lengthHalf){
 			i++;
