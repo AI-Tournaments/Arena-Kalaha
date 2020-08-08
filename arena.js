@@ -48,10 +48,11 @@ function doMove(gameboard, move, rules){
 function sumBoard(gameboard){
 	let score = 0;
 	let length = gameboard.length;
-	let lengthHalf = length/2;
+	let lengthHalf = (length/2)-1;
+	length--;
 	let ai_1 = gameboard[lengthHalf];
-	let ai_2 = gameboard[0];
-	for(let i = 1; i < length; i++){
+	let ai_2 = gameboard[length];
+	for(let i = 0; i < length; i++){
 		if(i === lengthHalf){
 			ai_1 += score;
 			i++;
