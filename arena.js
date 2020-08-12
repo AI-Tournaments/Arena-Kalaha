@@ -89,42 +89,45 @@ function callParticipant(matchList, matchIndex, aiIndex){
 				worker.lastCalled = undefined;
 				worker.onmessage = undefined;
 				let selectedMove = messageEvent.data;
-				let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
-				match.gameboard = moveData.gameboard;
+				if(0 <= selectedMove && selectedMove < match.gameboard/2 && 0 < match.gameboard[selectedMove]){
+					let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
+					match.gameboard = moveData.gameboard;
+					match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
 
-				match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
-
-				// Switch AI
-				if(!moveData.moveAgain){
-					aiIndex++;
-					for(let i=0; i < match.gameboard.length/2; i++){
-						match.gameboard.push(match.gameboard.shift());
-					}
-				}
-				if(isGameFinished(match.gameboard)){
-					if(aiIndex%2){
+					// Switch AI
+					if(!moveData.moveAgain){
+						aiIndex++;
 						for(let i=0; i < match.gameboard.length/2; i++){
 							match.gameboard.push(match.gameboard.shift());
 						}
 					}
-					match.participants.forEach(participant => {
-						participant.worker.lastCalled = null;
-					});
-					match.score = sumBoard(match.gameboard);
-					let done = true;
-					let scoreArray = [];
-					let historyArray = [];
-					matchList.forEach(match => {
-						done &= match.score !== undefined;
-						scoreArray.push(match.score);
-						historyArray.push(match.history);
-					});
-					if(done){
-						let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-						postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: historyArray}});
+					if(isGameFinished(match.gameboard)){
+						if(aiIndex%2){
+							for(let i=0; i < match.gameboard.length/2; i++){
+								match.gameboard.push(match.gameboard.shift());
+							}
+						}
+						match.participants.forEach(participant => {
+							participant.worker.lastCalled = null;
+						});
+						match.score = sumBoard(match.gameboard);
+						let done = true;
+						let scoreArray = [];
+						let historyArray = [];
+						matchList.forEach(match => {
+							done &= match.score !== undefined;
+							scoreArray.push(match.score);
+							historyArray.push(match.history);
+						});
+						if(done){
+							let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
+							postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: historyArray}});
+						}
+					}else{
+						callParticipant(matchList, matchIndex, aiIndex);
 					}
 				}else{
-					callParticipant(matchList, matchIndex, aiIndex);
+					postMessage({type: 'Aborted', message: {name: participant.name, error: 'Illegal move.'}});
 				}
 			};
 			worker.onerror = errorEvent => {
