@@ -89,7 +89,7 @@ function callParticipant(matchList, matchIndex, aiIndex){
 				worker.lastCalled = undefined;
 				worker.onmessage = undefined;
 				let selectedMove = messageEvent.data;
-				if(0 <= selectedMove && selectedMove < match.gameboard/2 && 0 < match.gameboard[selectedMove]){
+				if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
 					let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 					match.gameboard = moveData.gameboard;
 					match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
