@@ -52,35 +52,15 @@ function sumBoard(gameboard){
 	}
 	return data;
 }
-function sumScore(scoreArray, gameboardLength, startValue, participants){
-	let ai_1 = 0;
-	let ai_2 = 0;
-	let length = scoreArray.length;
+function sumScore(score, gameboardLength, startValue, participants){
 	let boardValue = gameboardLength*startValue;
-	let localScore_ai_1 = undefined;
-	let localScore_ai_2 = undefined;
-	let errorFound = false;
-	for(const score of scoreArray){
-		localScore_ai_1 = score[0];
-		localScore_ai_2 = score[1];
-		errorFound = boardValue != localScore_ai_1 + localScore_ai_2;
-		if(errorFound){
-			break;
-		}
-		ai_1 += score[0];
-		ai_2 += score[1];
-	}
+	let errorFound = boardValue != score[0] + score[1];
 	if(errorFound){
-		ai_1 = 'Error';
-		ai_2 = 'Sum(' + localScore_ai_1 + ', ' . localScore_ai_2 + ') != ' + boardValue;
-	}else{
-		ai_1 /= length;
-		ai_2 /= length;
+		return NaN;
 	}
-	return [{name: participants[0].name, score: ai_1}, {name: participants[1].name, score: ai_2}];
+	return [{name: participants[0].name, score: score[0]}, {name: participants[1].name, score: score[1]}];
 }
-function callParticipant(matchList, matchIndex, aiIndex){
-	let match = matchList[matchIndex];
+function callParticipant(match, aiIndex){
 	let participant = match.participants[aiIndex%2];
 	let worker = participant.worker;
 	if(worker instanceof Worker){
@@ -110,21 +90,14 @@ function callParticipant(matchList, matchIndex, aiIndex){
 						match.participants.forEach(participant => {
 							participant.worker.lastCalled = null;
 						});
-						match.score = sumBoard(match.gameboard);
-						let done = true;
-						let scoreArray = [];
-						let historyArray = [];
-						matchList.forEach(match => {
-							done &= match.score !== undefined;
-							scoreArray.push(match.score);
-							historyArray.push(match.history);
-						});
-						if(done){
-							let score = sumScore(scoreArray, match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-							postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: historyArray}});
+						let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
+						if(isNaN(score)){
+							postMessage({type: 'Aborted', message: {name: 'General error.', error: 'Illegal final score.'}});
+						}else{
+							postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: match.history}});
 						}
 					}else{
-						callParticipant(matchList, matchIndex, aiIndex);
+						callParticipant(match, aiIndex);
 					}
 				}else{
 					postMessage({type: 'Aborted', message: {name: participant.name, error: 'Illegal move.'}});
@@ -143,7 +116,7 @@ function callParticipant(matchList, matchIndex, aiIndex){
 	}else{
 		worker.then(worker_real => {
 			match.participants[aiIndex%2].worker = worker_real;
-			callParticipant(matchList, matchIndex, aiIndex);
+			callParticipant(match, aiIndex);
 		});
 	}
 }
@@ -162,40 +135,30 @@ function executionWatcher(executionLimit=1000, participants=[]){
 }
 onmessage = messageEvent => {
 	let gameboard = [];
-	let matches = messageEvent.data.arena.settings.gameboard.playBothSides ? 2 : 1;
 	for(let i = 0; i < 2; i++){
 		for(let n=0; n < messageEvent.data.arena.settings.gameboard.boardLength; n++){
 			gameboard.push(messageEvent.data.arena.settings.gameboard.startValue);
 		}
 		gameboard.push(0);
 	}
-	let matchList = [];
-	let participants=[];
 	let participant_1 = messageEvent.data.arena.participants[0][0];
 	let participant_2 = messageEvent.data.arena.participants[1][0];
-	for(let i = 0; i < matches; i++){
-		let match = {
-			participants: [
-				{
-					worker: createWorkerFromRemoteURL(participant_1.url, true),
-					name: participant_1.name
-				},{
-					worker: createWorkerFromRemoteURL(participant_2.url, true),
-					name: participant_2.name
-				}
-			],
-			score: undefined,
-			history: [],
-			gameboard: gameboard.slice(),
-			settings: messageEvent.data.arena.settings
-		};
-		participants = participants.concat(match.participants);
-		matchList.push(match);
-		callParticipant(matchList, matchList.length-1, 0);
-		let temp = participant_1;
-		participant_1 = participant_2;
-		participant_2 = temp;
-	}
-	executionWatcher(messageEvent.data.arena.settings.general.timelimit_ms, participants);
-	postMessage({type: 'Pending', message: matchList.length});
+	let match = {
+		participants: [
+			{
+				worker: createWorkerFromRemoteURL(participant_1.url, true),
+				name: participant_1.name
+			},{
+				worker: createWorkerFromRemoteURL(participant_2.url, true),
+				name: participant_2.name
+			}
+		],
+		score: undefined,
+		history: [],
+		gameboard: gameboard,
+		settings: messageEvent.data.arena.settings
+	};
+	callParticipant(match, 0);
+	executionWatcher(messageEvent.data.arena.settings.general.timelimit_ms, match.participants);
+	postMessage({type: 'Pending', message: 1});
 }

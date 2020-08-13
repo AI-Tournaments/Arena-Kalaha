@@ -26,8 +26,7 @@
 		},
 		"gameboard": {
 			"boardLength": 6,
-			"startValue": 4,
-			"playBothSides": false
+			"startValue": 4
 		},
 		"rules": {
 			"empty_capture": true
