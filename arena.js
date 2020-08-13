@@ -91,7 +91,7 @@ function callParticipant(match, aiIndex){
 							participant.worker.lastCalled = null;
 						});
 						let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-						if(isNaN(score)){
+						if(typeof score === 'object'){
 							postMessage({type: 'Aborted', message: {name: participant.name, error: 'General error - Illegal final score.'}});
 						}else{
 							postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, history: match.history}});
