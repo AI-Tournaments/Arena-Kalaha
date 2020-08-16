@@ -108,20 +108,20 @@ function callParticipant(match, aiIndex){
 			}
 		}
 		worker.lastCalled = new Date().getTime();
-		let opponent = null;
-		let opponentParticipant = match.participants[(aiIndex+1)%2];
-		if(match.settings.general.displayOpponents === 'Yes'){
-			opponent = opponentParticipant.name;
-		}else if(match.settings.general.displayOpponents === 'AccountOnly'){
-			opponent = opponentParticipant.name.split('/')[0];
-		}
-		worker.postMessage({
-			gameboard: match.gameboard,
-			settings: match.settings,
-			opponent: opponent
-		});
+		worker.postMessage(match.gameboard);
 	}else{
 		worker.then(worker_real => {
+			let opponent = null;
+			let opponentParticipant = match.participants[(aiIndex+1)%2];
+			if(match.settings.general.displayOpponents === 'Yes'){
+				opponent = opponentParticipant.name;
+			}else if(match.settings.general.displayOpponents === 'AccountOnly'){
+				opponent = opponentParticipant.name.split('/')[0];
+			}
+			worker_real.postMessage({
+				settings: match.settings,
+				opponent: opponent
+			});
 			match.participants[aiIndex%2].worker = worker_real;
 			callParticipant(match, aiIndex);
 		});
