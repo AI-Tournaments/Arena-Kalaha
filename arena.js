@@ -94,7 +94,7 @@ function callParticipant(match, aiIndex){
 						if(score === null){
 							postMessage({type: 'Aborted', message: {name: participant.name, error: 'General error - Illegal final score.'}});
 						}else{
-							postMessage({type: 'FinalScore', message: {score: score, settings: match.settings, log: match.history}});
+							postMessage({type: 'Done', message: {score: score, settings: match.settings, log: match.history}});
 						}
 					}else{
 						callParticipant(match, aiIndex);
