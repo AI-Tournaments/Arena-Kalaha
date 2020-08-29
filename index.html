@@ -10,6 +10,14 @@
 			#gamebord-wrapper {
 				text-align: center;
 			}
+			#secund-player {
+				display: block;
+				text-align: left;
+			}
+			#first-player {
+				display: block;
+				text-align: right;
+			}
 
 			#gamebord {
 				cursor: default;
@@ -19,12 +27,12 @@
 				background-color: whitesmoke;
 			}
 
-			.active {
-				cursor: pointer;
+			#controller {
+				width: 100%;
+				display: flex;
 			}
-
-			.disable {
-				background-color: darkgrey;
+			#slider {
+				width: -webkit-fill-available;
 			}
 
 			.column {
@@ -35,74 +43,24 @@
 				display: flex;
 			}
 
-			#square_0, #column-down .square {
+			#column-up>.square, #column-down>.square {
 				transform: translate(0%, 50%);
 				display: inline-grid;
-			}
-
-			.square-rotated {
-				transform: rotate(180deg);
-			}
-
-			.square_0-rotated {
-				transform: translate(0%, 50%) rotate(180deg) !important;
 			}
 
 			.square {
 				border: 1px solid black;
 				border-radius: 50%;
 				text-align: center;
-
 				min-width: 18.2px;
-
 				margin: 1px;
-			}
-
-			.marked {
-				border-color: orange;
-			}
-
-			.hint {
-				border-color: crimson;
-			}
-
-			.final {
-				background-color: darkmagenta !important;
-			}
-
-			.hidden {
-				display: none;
-			}
-
-			.expander-indicator {
-				font: bold;
-			}
-
-			#status {
-				float: left;
-				clear: left;
-			}
-
-			#settings fieldset {
-				clear: left;
-				float: left;
-			}
-
-			#settings fieldset legend {
-				cursor: pointer;
-			}
-
-			#settings div {
-				-webkit-margin-before: 1em;
-				-webkit-margin-after: 1em;
-				-webkit-margin-start: 0px;
-				-webkit-margin-end: 0px;
 			}
 		</style>
 		<script src="index.js"></script>
 	</head>
 	<body onload="a()">
 		<div id="gamebord-wrapper">
+			<span id="secund-player"></span>
 			<div id="gamebord">
 				<div class="column" id="column-up">
 					<!-- Square -->
@@ -121,6 +79,12 @@
 				<div class="column" id="column-down">
 					<!-- Square -->
 				</div>
+			</div>
+			<span id="first-player"></span>
+			<div id="controller">
+				<input type="button" id="step-back" value="<" disabled>
+				<input type="button" id="step-next" value=">">
+				<input type="range" value="0" min="0" id="slider">
 			</div>
 		</div>
 	</body>
