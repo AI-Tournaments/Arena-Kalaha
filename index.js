@@ -2,7 +2,6 @@
 function a(){
 	let data = JSON.parse(decodeURI(location.hash.substring(1)));
 	let firstMover = data.log[0].mover;
-	console.log(data); // TODO: REMOVE!
 	let baseDown = data.settings.gameboard.boardLength;
 	let baseUp = baseDown*2 + 1;
 	let slider = document.getElementById('slider');
@@ -33,16 +32,10 @@ function a(){
 	function step(mouseEvent){
 		slider.valueAsNumber += mouseEvent.target === buttonNext ? 1 : -1;
 		setBoard(slider.valueAsNumber - 1);
-		buttonBack.disabled = false;
-		buttonNext.disabled = false;
-		if(mouseEvent.target === buttonBack){
-			buttonBack.disabled = slider.valueAsNumber === 0;
-		}
-		if(mouseEvent.target === buttonNext){
-			buttonNext.disabled = slider.valueAsNumber === data.log.length;
-		}
 	}
 	function setBoard(logIndex=-1){
+		buttonBack.disabled = slider.valueAsNumber === 0;
+		buttonNext.disabled = slider.valueAsNumber === data.log.length;
 		let log = -1 < logIndex ? data.log[logIndex] : null;
 		let state = log !== null ? log.gameboard.slice() : null;
 		if(log !== null && log.mover !== firstMover){
