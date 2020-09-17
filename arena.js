@@ -143,13 +143,13 @@ function executionWatcher(executionLimit=1000, participants=[]){
 onmessage = messageEvent => {
 	let gameboard = [];
 	for(let i = 0; i < 2; i++){
-		for(let n=0; n < messageEvent.data.arena.settings.gameboard.boardLength; n++){
-			gameboard.push(messageEvent.data.arena.settings.gameboard.startValue);
+		for(let n=0; n < messageEvent.data.settings.gameboard.boardLength; n++){
+			gameboard.push(messageEvent.data.settings.gameboard.startValue);
 		}
 		gameboard.push(0);
 	}
-	let participant_1 = messageEvent.data.arena.participants[0][0];
-	let participant_2 = messageEvent.data.arena.participants[1][0];
+	let participant_1 = messageEvent.data.participants[0][0];
+	let participant_2 = messageEvent.data.participants[1][0];
 	let match = {
 		participants: [
 			{
@@ -163,9 +163,9 @@ onmessage = messageEvent => {
 		score: undefined,
 		history: [],
 		gameboard: gameboard,
-		settings: messageEvent.data.arena.settings
+		settings: messageEvent.data.settings
 	};
 	callParticipant(match, 0);
-	executionWatcher(messageEvent.data.arena.settings.general.timelimit_ms, match.participants);
+	executionWatcher(messageEvent.data.settings.general.timelimit_ms, match.participants);
 	postMessage({type: 'Pending', message: 1});
 }
