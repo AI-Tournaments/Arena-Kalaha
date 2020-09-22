@@ -61,84 +61,50 @@ function sumScore(score, gameboardLength, startValue, participants){
 	return [{name: participants[0].name, score: score[0]}, {name: participants[1].name, score: score[1]}];
 }
 function callParticipant(match, aiIndex){
-	let participant = match.participants[aiIndex%2];
-	let worker = participant.worker;
-	if(worker instanceof Worker){
-		if(worker.onmessage === null){
-			worker.onmessage = messageEvent => {
-				worker.lastCalled = undefined;
-				worker.onmessage = undefined;
-				let selectedMove = messageEvent.data;
-				if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
-					let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
-					match.gameboard = moveData.gameboard;
-					match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
+	let participant = match.participants.get(aiIndex%2, 0);
+	if(participant.onmessage === null){
+		participant.onmessage = messageEvent => {
+			let selectedMove = messageEvent.data;
+			if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
+				let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
+				match.gameboard = moveData.gameboard;
+				match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
 
-					// Switch AI
-					if(!moveData.moveAgain){
-						aiIndex++;
+				// Switch AI
+				if(!moveData.moveAgain){
+					aiIndex++;
+					for(let i=0; i < match.gameboard.length/2; i++){
+						match.gameboard.push(match.gameboard.shift());
+					}
+				}
+				if(isGameFinished(match.gameboard)){
+					if(aiIndex%2){
 						for(let i=0; i < match.gameboard.length/2; i++){
 							match.gameboard.push(match.gameboard.shift());
 						}
 					}
-					if(isGameFinished(match.gameboard)){
-						if(aiIndex%2){
-							for(let i=0; i < match.gameboard.length/2; i++){
-								match.gameboard.push(match.gameboard.shift());
-							}
-						}
-						match.participants.forEach(participant => {
-							participant.worker.lastCalled = null;
-						});
-						let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-						if(score === null){
-							postMessage({type: 'Aborted', message: {name: participant.name, error: 'General error - Illegal final score.'}});
-						}else{
-							postMessage({type: 'Done', message: {score: score, settings: match.settings, log: match.history}});
-						}
+					match.participants.terminate();
+					let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
+					if(score === null){
+						abort(participant.name, 'General error - Illegal final score.');
 					}else{
-						callParticipant(match, aiIndex);
+						postMessage({type: 'Done', message: {score: score, settings: match.settings, log: match.history}});
 					}
 				}else{
-					postMessage({type: 'Aborted', message: {name: participant.name, error: 'Illegal move.'}});
+					callParticipant(match, aiIndex);
 				}
-			};
-			worker.onerror = errorEvent => {
-				postMessage({type: 'Aborted', message: {name: participant.name, error: errorEvent.message}});
+			}else{
+				abort(participant.name, 'Illegal move.');
 			}
+		};
+		participant.onerror = errorEvent => {
+			abort(participant.name, errorEvent.message);
 		}
-		worker.lastCalled = new Date().getTime();
-		worker.postMessage(match.gameboard);
-	}else{
-		worker.then(worker_real => {
-			let opponent = null;
-			let opponentParticipant = match.participants[(aiIndex+1)%2];
-			if(match.settings.general.displayOpponents === 'Yes'){
-				opponent = opponentParticipant.name;
-			}else if(match.settings.general.displayOpponents === 'AccountOnly'){
-				opponent = opponentParticipant.name.split('/')[0];
-			}
-			worker_real.postMessage({
-				settings: match.settings,
-				opponent: opponent
-			});
-			match.participants[aiIndex%2].worker = worker_real;
-			callParticipant(match, aiIndex);
-		});
 	}
+	participant.postMessage(match.gameboard);
 }
-function executionWatcher(executionLimit=1000, participants=[]){
-	participants.forEach(participant => {
-		let executionTimeViolation = participant.worker.lastCalled === undefined ? false : executionLimit < new Date().getTime() - participant.worker.lastCalled;
-		if(participant.worker.lastCalled === null || executionTimeViolation){
-			participants.splice(participants.indexOf(participant), 1);
-			if(executionTimeViolation){
-				postMessage({type: 'Aborted', message: {name: participant.name, error: 'Execution time violation.'}});
-				participant.worker.terminate();
-			}
-		}
-	});
-	setTimeout(executionWatcher, executionLimit, executionLimit, participants);
+function abort(participantName, error){
+	postMessage({type: 'Aborted', message: {participantName: participantName, error: error}})
 }
 onmessage = messageEvent => {
 	let gameboard = [];
@@ -148,24 +114,23 @@ onmessage = messageEvent => {
 		}
 		gameboard.push(0);
 	}
-	let participant_1 = messageEvent.data.participants[0][0];
-	let participant_2 = messageEvent.data.participants[1][0];
+	let participants = new Participants(messageEvent.data);
+	participants.participantDropped = (participantName, error) => abort(participantName, error);
 	let match = {
-		participants: [
-			{
-				worker: createWorkerFromRemoteURL(participant_1.url, true),
-				name: participant_1.name
-			},{
-				worker: createWorkerFromRemoteURL(participant_2.url, true),
-				name: participant_2.name
-			}
-		],
+		participants: participants,
 		score: undefined,
 		history: [],
 		gameboard: gameboard,
 		settings: messageEvent.data.settings
 	};
-	callParticipant(match, 0);
-	executionWatcher(messageEvent.data.settings.general.timelimit_ms, match.participants);
-	postMessage({type: 'Pending', message: 1});
+	match.participants.ready.then(() => {
+		onmessage = messageEvent => {
+			if(messageEvent.data === 'Start'){
+				callParticipant(match, 0);
+			}
+		}
+		postMessage({type: 'Ready-To-Start', message: null});
+	}).catch(error => {
+		abort('Did-Not-Start',error);
+	});
 }
