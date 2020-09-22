@@ -114,23 +114,21 @@ onmessage = messageEvent => {
 		}
 		gameboard.push(0);
 	}
-	let participants = new Participants(messageEvent.data);
-	participants.participantDropped = (participantName, error) => abort(participantName, error);
 	let match = {
-		participants: participants,
+		participants: null,
 		score: undefined,
 		history: [],
 		gameboard: gameboard,
 		settings: messageEvent.data.settings
 	};
-	match.participants.ready.then(() => {
+	match.participants = new Participants(messageEvent.data, ()=>{
 		onmessage = messageEvent => {
 			if(messageEvent.data === 'Start'){
 				callParticipant(match, 0);
 			}
 		}
 		postMessage({type: 'Ready-To-Start', message: null});
-	}).catch(error => {
-		abort('Did-Not-Start',error);
-	});
+	}, error => {
+		abort('Did-Not-Start', error);
+	}, (participantName, error) => abort(participantName, error));
 }
