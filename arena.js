@@ -28,7 +28,7 @@ function doMove(gameboard, move, rules){
 	while(0 < steps){
 		move++;
 		move %= size;
-		if(move < size-1){	// If on last, do not add. Opposite goal.
+		if(move < size-1){	// If on last, do not add. Is opposite goal.
 			steps--;
 			gameboard[move] += 1;
 		}
