@@ -89,7 +89,7 @@ function callParticipant(match, aiIndex){
 					if(score === null){
 						abort(participant.name, 'General error - Illegal final score.');
 					}else{
-						postMessage({type: 'Done', message: {score: participants.getScores(), settings: match.settings, log: match.history}});
+						postMessage({type: 'Done', message: {score: match.participants.getScores(), settings: match.settings, log: match.history}});
 					}
 				}else{
 					callParticipant(match, aiIndex);
