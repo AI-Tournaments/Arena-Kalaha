@@ -58,7 +58,8 @@ function sumScore(score, gameboardLength, startValue, participants){
 	if(errorFound){
 		return null;
 	}
-	return [{name: participants[0].name, score: score[0]}, {name: participants[1].name, score: score[1]}];
+	participants.addScore(0, score[0]);
+	participants.addScore(1, score[1]);
 }
 function callParticipant(match, aiIndex){
 	let participant = match.participants.get(aiIndex%2, 0);
@@ -88,7 +89,7 @@ function callParticipant(match, aiIndex){
 					if(score === null){
 						abort(participant.name, 'General error - Illegal final score.');
 					}else{
-						postMessage({type: 'Done', message: {score: score, settings: match.settings, log: match.history}});
+						postMessage({type: 'Done', message: {score: participants.getScores(), settings: match.settings, log: match.history}});
 					}
 				}else{
 					callParticipant(match, aiIndex);
