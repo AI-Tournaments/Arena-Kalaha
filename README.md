@@ -7,6 +7,6 @@ The `tick`-counter starts at 0 and raised 1 after a choise is made.
 The `switch`-counter starts at 0 and raised 1 when the player is swaped.
 
 ### Disqualifications
-Violateting any of this will lead to DNF (Did-Not-Finish), aborted game and disqualification from the running tournament.
+Violating any of this will lead to DNF (Did-Not-Finish), aborted game and disqualification from the running tournament.
 - Caught exceeding the time limit (`timelimit_ms`) for tick execution defined by the tournament.
 - Trying to movie pellets from the opponent's side or the stores.
