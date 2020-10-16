@@ -87,24 +87,28 @@ function callParticipant(match, aiIndex){
 					match.participants.terminate();
 					let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
 					if(score === null){
-						abort(participant.name, 'General error - Illegal final score.');
+						postAbort(participant, 'General error - Illegal final score.');
 					}else{
-						postMessage({type: 'Done', message: {score: match.participants.getScores(), settings: match.settings, log: match.history}});
+						postDone(match.participants, match.history);
 					}
 				}else{
 					callParticipant(match, aiIndex);
 				}
 			}else{
-				abort(participant.name, 'Illegal move.');
+				postAbort(participant, 'Illegal move.');
 			}
 		};
 		participant.onerror = errorEvent => {
-			abort(participant.name, errorEvent.message);
+			postAbort(participant, errorEvent.message);
 		}
 	}
 	participant.postMessage(match.gameboard);
 }
-function abort(participantName, error){
+function postDone(participants, log){
+	postMessage({type: 'Done', message: {score: participants.getScores(), settings: participants.getSettings(), log: log}});
+}
+function postAbort(participant, error){
+	let participantName = participant.name === undefined ? participant : participant.name;
 	postMessage({type: 'Aborted', message: {participantName: participantName, error: error}})
 }
 onmessage = messageEvent => {
@@ -130,6 +134,6 @@ onmessage = messageEvent => {
 		}
 		postMessage({type: 'Ready-To-Start', message: null});
 	}, error => {
-		abort('Did-Not-Start', error);
-	}, (participantName, error) => abort(participantName, error));
+		postAbort('Did-Not-Start', error);
+	}, (participantName, error) => postAbort(participantName, error));
 }
