@@ -107,7 +107,7 @@ function callParticipant(match, aiIndex){
 function postDone(participants, log){
 	postMessage({type: 'Done', message: {score: participants.getScores(), settings: participants.getSettings(), log: log}});
 }
-function postAbort(participant, error){
+function postAbort(participant='', error=''){
 	let participantName = participant.name === undefined ? participant : participant.name;
 	postMessage({type: 'Aborted', message: {participantName: participantName, error: error}})
 }
