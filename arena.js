@@ -1,6 +1,4 @@
 'use strict'
-importScripts('https://ai-tournaments.github.io/AI-Tournaments/Arena/Participants.js');
-importScripts('https://chrisacrobat.github.io/js-compilation/CreateWorkerFromRemoteURL.js');
 function isGameFinished(gameboard){
 	let ai_1 = 0;
 	let ai_2 = 0;
@@ -112,6 +110,7 @@ function postAbort(participant='', error=''){
 	postMessage({type: 'Aborted', message: {participantName: participantName, error: error}})
 }
 onmessage = messageEvent => {
+	importScripts(messageEvent.data.ArenaHelper_url);
 	let gameboard = [];
 	for(let i = 0; i < 2; i++){
 		for(let n=0; n < messageEvent.data.settings.gameboard.boardLength; n++){
@@ -126,7 +125,7 @@ onmessage = messageEvent => {
 		gameboard: gameboard,
 		settings: messageEvent.data.settings
 	};
-	match.participants = new Participants(messageEvent.data, ()=>{
+	match.participants = new ArenaHelper.Participants(messageEvent.data, ()=>{
 		onmessage = messageEvent => {
 			if(messageEvent.data === 'Start'){
 				callParticipant(match, 0);
