@@ -134,5 +134,5 @@ onmessage = messageEvent => {
 		postMessage({type: 'Ready-To-Start', message: null});
 	}, error => {
 		postAbort('Did-Not-Start', error);
-	}, (participantName, error) => postAbort(participantName, error));
+	}, (participant, error) => postAbort(participant.name, error));
 }
