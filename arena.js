@@ -82,7 +82,7 @@ function callParticipant(match, aiIndex){
 							match.gameboard.push(match.gameboard.shift());
 						}
 					}
-					match.participants.terminate();
+					match.participants.terminateAllWorkers();
 					let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
 					if(score === null){
 						postAbort(participant, 'General error - Illegal final score.');
@@ -134,5 +134,5 @@ onmessage = messageEvent => {
 		postMessage({type: 'Ready-To-Start', message: null});
 	}, error => {
 		postAbort('Did-Not-Start', error);
-	}, (participantName, error) => postAbort(participantName, error));
+	}, (participant, error) => postAbort(participant.name, error));
 }
