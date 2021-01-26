@@ -5,21 +5,9 @@
 			"teams": {"min": 2, "max": 2},
 			"participantsPerTeam": {"min": 1, "max": 1}
 		},
-		"settings": {
-			"averageOf": 1,
-			"displayOpponents": ["Hide", "AccountOnly", "Yes"],
-			"timelimit_ms": 1000,
-			"_meta": {
-				"averageOf": {"min": 1, "max": null, "step": 1},
-				"timelimit_ms": {"min": 0, "max": null}
-			}
-		},
 		"includeScripts": {
 			"arena": [],
 			"participants": []
-		},
-		"advance": {
-			"allowRemoteExecution": false
 		},
 		"symmetric": false,
 		"randomness": false
