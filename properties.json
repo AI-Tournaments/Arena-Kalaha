@@ -6,28 +6,32 @@
 			"participantsPerTeam": {"min": 1, "max": 1}
 		},
 		"settings": {
-			"general": {
-				"averageOf": {"min": 1, "max": null},
+			"averageOf": 1,
+			"displayOpponents": ["Hide", "AccountOnly", "Yes"],
+			"timelimit_ms": 1000,
+			"_meta": {
+				"averageOf": {"min": 1, "max": null, "step": 1},
 				"timelimit_ms": {"min": 0, "max": null}
-			},
-			"gameboard": {
-				"boardLength": {"min": 1, "max": null},
-				"startValue": {"min": 1, "max": null}
 			}
+		},
+		"includeScripts": {
+			"arena": [],
+			"participants": []
+		},
+		"advance": {
+			"allowRemoteExecution": false
 		},
 		"symmetric": false,
 		"randomness": false
 	},
 	"settings": {
-		"general": {
-			"averageOf": 1,
-			"allowRemoteExecution": false,
-			"displayOpponents": ["Hide", "AccountOnly", "Yes"],
-			"timelimit_ms": 1000
-		},
 		"gameboard": {
 			"boardLength": 6,
-			"startValue": 4
+			"startValue": 4,
+			"_meta": {
+				"boardLength": {"min": 1, "max": null},
+				"startValue": {"min": 1, "max": null}
+			}
 		},
 		"rules": {
 			"empty_capture": true
