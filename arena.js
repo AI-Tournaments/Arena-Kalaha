@@ -109,8 +109,7 @@ function postAbort(participant='', error=''){
 	let participantName = participant.name === undefined ? participant : participant.name;
 	postMessage({type: 'Aborted', message: {participantName: participantName, error: error}})
 }
-onmessage = messageEvent => {
-	importScripts(messageEvent.data.ArenaHelper_url);
+ArenaHelper.init = participants => {
 	let gameboard = [];
 	for(let i = 0; i < 2; i++){
 		for(let n=0; n < messageEvent.data.settings.gameboard.boardLength; n++){
@@ -125,14 +124,6 @@ onmessage = messageEvent => {
 		gameboard: gameboard,
 		settings: messageEvent.data.settings
 	};
-	match.participants = new ArenaHelper.Participants(messageEvent.data, ()=>{
-		onmessage = messageEvent => {
-			if(messageEvent.data === 'Start'){
-				callParticipant(match, 0);
-			}
-		}
-		postMessage({type: 'Ready-To-Start', message: null});
-	}, error => {
-		postAbort('Did-Not-Start', error);
-	}, (participant, error) => postAbort(participant.name, error));
+	match.participants = participants;
+	callParticipant(match, 0);
 }
