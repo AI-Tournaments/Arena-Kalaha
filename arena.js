@@ -61,7 +61,8 @@ function sumScore(score, gameboardLength, startValue, participants){
 }
 function callParticipant(match, aiIndex){
 	let participant = match.participants.get(aiIndex%2, 0);
-	participant.postMessage(match.gameboard).then(selectedMove => {
+	participant.postMessage(match.gameboard).then(response => {
+		let selectedMove = response.data;
 		if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
 			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 			match.gameboard = moveData.gameboard;
