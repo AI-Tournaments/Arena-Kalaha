@@ -109,11 +109,11 @@ function postAbort(participant='', error=''){
 	let participantName = participant.name === undefined ? participant : participant.name;
 	postMessage({type: 'Aborted', message: {participantName: participantName, error: error}})
 }
-ArenaHelper.init = participants => {
+ArenaHelper.init = (settings, participants) => {
 	let gameboard = [];
 	for(let i = 0; i < 2; i++){
-		for(let n=0; n < messageEvent.data.settings.gameboard.boardLength; n++){
-			gameboard.push(messageEvent.data.settings.gameboard.startValue);
+		for(let n=0; n < settings.gameboard.boardLength; n++){
+			gameboard.push(settings.gameboard.startValue);
 		}
 		gameboard.push(0);
 	}
@@ -122,7 +122,7 @@ ArenaHelper.init = participants => {
 		score: undefined,
 		history: [],
 		gameboard: gameboard,
-		settings: messageEvent.data.settings
+		settings: settings
 	};
 	match.participants = participants;
 	callParticipant(match, 0);
