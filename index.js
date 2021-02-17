@@ -1,16 +1,16 @@
 'use strict'
 function a(){
 	let data = JSON.parse(decodeURI(location.hash.substring(1)));
-	let firstMover = data.log[0].mover;
+	let firstMover = data.log[0].value.mover;
 	let baseDown = data.settings.gameboard.boardLength;
 	let baseUp = baseDown*2 + 1;
 	let slider = document.getElementById('slider');
 	{
-		let first = data.log[0].mover;
+		let first = data.log[0].value.mover;
 		document.getElementById('first-player').innerHTML = first;
 		let secund = document.getElementById('secund-player')
 		for(let index = 0; index < data.log.length; index++) {
-			const log = data.log[index];
+			const log = data.log[index].value;
 			if(log.mover !== first){
 				secund.innerHTML = log.mover;
 			}
