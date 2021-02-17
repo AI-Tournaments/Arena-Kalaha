@@ -96,7 +96,7 @@ function callParticipant(match, aiIndex){
 		}
 	});
 }
-ArenaHelper.init = (settings, participants) => {
+ArenaHelper.init = (participants, settings) => {
 	let gameboard = [];
 	for(let i = 0; i < 2; i++){
 		for(let n=0; n < settings.gameboard.boardLength; n++){
