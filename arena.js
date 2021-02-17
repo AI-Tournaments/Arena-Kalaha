@@ -66,7 +66,7 @@ function callParticipant(match, aiIndex){
 		if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
 			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 			match.gameboard = moveData.gameboard;
-			match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
+			ArenaHelper.log('tick', {mover: participant.name, gameboard: match.gameboard.slice()});
 
 			// Switch AI
 			if(!moveData.moveAgain){
@@ -86,7 +86,7 @@ function callParticipant(match, aiIndex){
 				if(score === null){
 					ArenaHelper.postAbort(participant, 'General error - Illegal final score.');
 				}else{
-					ArenaHelper.postDone(match.participants, match.history);
+					ArenaHelper.postDone();
 				}
 			}else{
 				callParticipant(match, aiIndex);
@@ -107,7 +107,6 @@ ArenaHelper.init = (settings, participants) => {
 	let match = {
 		participants: null,
 		score: undefined,
-		history: [],
 		gameboard: gameboard,
 		settings: settings
 	};
