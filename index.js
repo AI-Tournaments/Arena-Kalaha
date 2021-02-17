@@ -36,7 +36,7 @@ function a(){
 	function setBoard(logIndex=-1){
 		buttonBack.disabled = slider.valueAsNumber === 0;
 		buttonNext.disabled = slider.valueAsNumber === data.log.length;
-		let log = -1 < logIndex ? data.log[logIndex] : null;
+		let log = -1 < logIndex ? data.log[logIndex].value : null;
 		let state = log !== null ? log.gameboard.slice() : null;
 		if(log !== null && log.mover !== firstMover){
 			for(let i = 0; i < state.length/2; i++) {
