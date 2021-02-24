@@ -1,6 +1,6 @@
 'use strict'
 function a(){
-	let data = JSON.parse(decodeURI(location.hash.substring(1)));
+	let data = ReplayHelper.getData();
 	let firstMover = data.log[0].value.mover;
 	let baseDown = data.settings.gameboard.boardLength;
 	let baseUp = baseDown*2 + 1;
