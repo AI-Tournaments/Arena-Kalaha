@@ -61,78 +61,55 @@ function sumScore(score, gameboardLength, startValue, participants){
 }
 function callParticipant(match, aiIndex){
 	let participant = match.participants.get(aiIndex%2, 0);
-	if(participant.onmessage === null){
-		participant.onmessage = messageEvent => {
-			let selectedMove = messageEvent.data;
-			if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
-				let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
-				match.gameboard = moveData.gameboard;
-				match.history.push({mover: participant.name, gameboard: match.gameboard.slice()});
+	participant.postMessage(match.gameboard).then(response => {
+		let selectedMove = response.data;
+		if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
+			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
+			match.gameboard = moveData.gameboard;
+			ArenaHelper.log('tick', {mover: participant.name, gameboard: match.gameboard.slice()});
 
-				// Switch AI
-				if(!moveData.moveAgain){
-					aiIndex++;
+			// Switch AI
+			if(!moveData.moveAgain){
+				aiIndex++;
+				for(let i=0; i < match.gameboard.length/2; i++){
+					match.gameboard.push(match.gameboard.shift());
+				}
+			}
+			if(isGameFinished(match.gameboard)){
+				if(aiIndex%2){
 					for(let i=0; i < match.gameboard.length/2; i++){
 						match.gameboard.push(match.gameboard.shift());
 					}
 				}
-				if(isGameFinished(match.gameboard)){
-					if(aiIndex%2){
-						for(let i=0; i < match.gameboard.length/2; i++){
-							match.gameboard.push(match.gameboard.shift());
-						}
-					}
-					match.participants.terminateAllWorkers();
-					let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-					if(score === null){
-						postAbort(participant, 'General error - Illegal final score.');
-					}else{
-						postDone(match.participants, match.history);
-					}
+				match.participants.terminateAllWorkers();
+				let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
+				if(score === null){
+					ArenaHelper.postAbort(participant, 'General error - Illegal final score.');
 				}else{
-					callParticipant(match, aiIndex);
+					ArenaHelper.postDone();
 				}
 			}else{
-				postAbort(participant, 'Illegal move.');
+				callParticipant(match, aiIndex);
 			}
-		};
-		participant.onerror = errorEvent => {
-			postAbort(participant, errorEvent.message);
+		}else{
+			ArenaHelper.postAbort(participant, 'Illegal move.');
 		}
-	}
-	participant.postMessage(match.gameboard);
+	});
 }
-function postDone(participants, log){
-	postMessage({type: 'Done', message: {score: participants.getScores(), settings: participants.getSettings(), log: log}});
-}
-function postAbort(participant='', error=''){
-	let participantName = participant.name === undefined ? participant : participant.name;
-	postMessage({type: 'Aborted', message: {participantName: participantName, error: error}})
-}
-onmessage = messageEvent => {
-	importScripts(messageEvent.data.ArenaHelper_url);
+ArenaHelper.init = (participants, settings) => {
 	let gameboard = [];
 	for(let i = 0; i < 2; i++){
-		for(let n=0; n < messageEvent.data.settings.gameboard.boardLength; n++){
-			gameboard.push(messageEvent.data.settings.gameboard.startValue);
+		for(let n=0; n < settings.gameboard.boardLength; n++){
+			gameboard.push(settings.gameboard.startValue);
 		}
 		gameboard.push(0);
 	}
 	let match = {
 		participants: null,
 		score: undefined,
-		history: [],
 		gameboard: gameboard,
-		settings: messageEvent.data.settings
+		settings: settings
 	};
-	match.participants = new ArenaHelper.Participants(messageEvent.data, ()=>{
-		onmessage = messageEvent => {
-			if(messageEvent.data === 'Start'){
-				callParticipant(match, 0);
-			}
-		}
-		postMessage({type: 'Ready-To-Start', message: null});
-	}, error => {
-		postAbort('Did-Not-Start', error);
-	}, (participant, error) => postAbort(participant.name, error));
+	match.participants = participants;
+	callParticipant(match, 0);
 }
