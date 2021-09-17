@@ -1,5 +1,7 @@
 # Kalaha-Arena
 Gathers and manage all [Kalaha](https://en.wikipedia.org/wiki/Kalah) (a.k.s. Mancala) participants.
+Click image below to join the official Discord channel.
+<br>[![Discord banner2](https://discord.com/api/guilds/765291928454823936/widget.png?style=banner2)](https://discord.gg/fxgQqacSgG)
 
 ## Rules
 You will receive an array called `gameboard` that represents where the pellets are located. The first half is your side and the later is the oponents. The store is located last in each half.
