@@ -9,7 +9,7 @@ function a(){
 			_currentMatchIndex = parseInt(selectMatches.selectedOptions[0].dataset.index);
 			let matchLog = replay.arenaResult.matchLogs[_currentMatchIndex];
 			let firstMover = matchLog.log[0].value.mover;
-			let baseDown = matchLog.settings.gameboard.boardLength;
+			let baseDown = replay.arenaResult.settings.gameboard.boardLength;
 			let baseUp = baseDown*2 + 1;
 			let slider = document.getElementById('slider');
 			{
@@ -57,8 +57,8 @@ function a(){
 				let rowDown = document.getElementById('rowDown');
 				rowUp.innerHTML = '';
 				rowDown.innerHTML = '';
-				let boardSize = matchLog.settings.gameboard.boardLength;
-				let startValue = matchLog.settings.gameboard.startValue;
+				let boardSize = replay.arenaResult.settings.gameboard.boardLength;
+				let startValue = replay.arenaResult.settings.gameboard.startValue;
 				for(let index = 0; index < boardSize; index++){
 					let indexUp = (boardSize*2 - index);
 					let indexDown = index;
