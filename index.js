@@ -3,8 +3,11 @@ function a(){
 	let selectMatches = document.getElementById('matches');
 	let buttonBack = document.getElementById('step-back');
 	let buttonNext = document.getElementById('step-next');
+	let _currentMatchIndex;
 	ReplayHelper.init(replay=>{
 		selectMatches.onchange = ()=>{
+			_currentMatchIndex = parseInt(selectMatches.selectedOptions[0].dataset.index);
+			let matchLog = replay.arenaResult.matchLogs[_currentMatchIndex];
 			let firstMover = matchLog.log[0].value.mover;
 			let baseDown = matchLog.settings.gameboard.boardLength;
 			let baseUp = baseDown*2 + 1;
