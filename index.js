@@ -8,6 +8,11 @@ function a(){
 		selectMatches.onchange = ()=>{
 			_currentMatchIndex = parseInt(selectMatches.selectedOptions[0].dataset.index);
 			let matchLog = replay.arenaResult.matchLogs[_currentMatchIndex];
+			if(matchLog.error){
+				document.body.style.color = 'red';
+				document.body.innerText = matchLog.error;
+				return;
+			}
 			let firstMover = matchLog.log[0].value.mover;
 			let baseDown = replay.arenaResult.settings.gameboard.boardLength;
 			let baseUp = baseDown*2 + 1;
