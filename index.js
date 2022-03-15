@@ -10,8 +10,8 @@ function a(){
 			let matchLog = replay.arenaResult.matchLogs[_currentMatchIndex];
 			if(matchLog.error){
 				document.body.style.color = 'red';
-				document.body.fontFamily = 'monospace';
-				document.body.whiteSpace = 'pre';
+				document.body.style.fontFamily = 'monospace';
+				document.body.style.whiteSpace = 'pre';
 				document.body.innerText = matchLog.error;
 				return;
 			}
