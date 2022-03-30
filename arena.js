@@ -62,9 +62,16 @@ function sumScore(score, gameboardLength, startValue, participants){
 function callParticipant(match, aiIndex){
 	let participant = match.participants.get(aiIndex%2, 0);
 	participant.postMessage(match.gameboard).then(response => {
-		let selectedMove = response.data;
-		if(0 <= selectedMove && selectedMove < match.gameboard.length/2 && 0 < match.gameboard[selectedMove]){
-			let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
+		let selectedMove = 0;
+		if(response.message){
+			if(0 <= r.message.data && response.message.data < match.gameboard.length/2 && 0 < match.gameboard[response.message.data]){ // Check if legal move.
+				selectedMove = response.message.data;
+			}
+		}
+		while(match.gameboard[selectedMove] === 0){ // Validate
+			selectedMove++;
+		}
+		let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
 			match.gameboard = moveData.gameboard;
 			ArenaHelper.log('tick', {mover: participant.name, gameboard: match.gameboard.slice()});
 
@@ -91,9 +98,6 @@ function callParticipant(match, aiIndex){
 			}else{
 				callParticipant(match, aiIndex);
 			}
-		}else{
-			ArenaHelper.postAbort(participant, 'Illegal move.');
-		}
 	});
 }
 ArenaHelper.init = (participants, settings) => {
