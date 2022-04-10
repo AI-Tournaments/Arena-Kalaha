@@ -64,7 +64,7 @@ function callParticipant(match, aiIndex){
 	participant.postMessage(match.gameboard).then(response => {
 		let selectedMove = 0;
 		if(response.message){
-			if(0 <= r.message.data && response.message.data < match.gameboard.length/2 && 0 < match.gameboard[response.message.data]){ // Check if legal move.
+			if(0 <= response.message.data && response.message.data < match.gameboard.length/2 && 0 < match.gameboard[response.message.data]){ // Check if legal move.
 				selectedMove = response.message.data;
 			}
 		}
