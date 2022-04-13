@@ -8,7 +8,7 @@ You will receive an array called `gameboard` that represents where the pellets a
 The `tick`-counter starts at 0 and raised 1 after a choise is made.
 The `switch`-counter starts at 0 and raised 1 when the player is swaped.
 
-### Disqualifications
-Violating any of this will lead to DNF (Did-Not-Finish), aborted game and disqualification from the running tournament.
-- Caught exceeding the time limit (`timelimit_ms`) for tick execution defined by the tournament.
+### Rules violation
+If response violate any of this, the respons will be replaced with taking the first valid keep farest from the store.
+- Caught exceeding the time limit (`executionSteps`) for tick execution defined by the tournament.
 - Trying to movie pellets from the opponent's side or the stores.
