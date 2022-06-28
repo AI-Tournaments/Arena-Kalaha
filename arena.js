@@ -72,32 +72,32 @@ function callParticipant(match, aiIndex){
 			selectedMove++;
 		}
 		let moveData = doMove(match.gameboard, selectedMove, match.settings.rules);
-			match.gameboard = moveData.gameboard;
-			ArenaHelper.log('tick', {mover: participant.name, gameboard: match.gameboard.slice()});
+		match.gameboard = moveData.gameboard;
+		ArenaHelper.log('tick', {mover: participant.name, gameboard: match.gameboard.slice()});
 
-			// Switch AI
-			if(!moveData.moveAgain){
-				aiIndex++;
+		// Switch AI
+		if(!moveData.moveAgain){
+			aiIndex++;
+			for(let i=0; i < match.gameboard.length/2; i++){
+				match.gameboard.push(match.gameboard.shift());
+			}
+		}
+		if(isGameFinished(match.gameboard)){
+			if(aiIndex%2){
 				for(let i=0; i < match.gameboard.length/2; i++){
 					match.gameboard.push(match.gameboard.shift());
 				}
 			}
-			if(isGameFinished(match.gameboard)){
-				if(aiIndex%2){
-					for(let i=0; i < match.gameboard.length/2; i++){
-						match.gameboard.push(match.gameboard.shift());
-					}
-				}
-				match.participants.terminateAllWorkers();
-				let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
-				if(score === null){
-					ArenaHelper.postAbort(participant, 'General error - Illegal final score.');
-				}else{
-					ArenaHelper.postDone();
-				}
+			match.participants.terminateAllWorkers();
+			let score = sumScore(sumBoard(match.gameboard), match.gameboard.length-2, match.settings.gameboard.startValue, match.participants);
+			if(score === null){
+				ArenaHelper.postAbort(participant, 'General error - Illegal final score.');
 			}else{
-				callParticipant(match, aiIndex);
+				ArenaHelper.postDone();
 			}
+		}else{
+			callParticipant(match, aiIndex);
+		}
 	});
 }
 ArenaHelper.init = (participants, settings) => {
