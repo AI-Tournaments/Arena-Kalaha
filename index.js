@@ -3,6 +3,7 @@ function a(){
 	let selectMatches = document.getElementById('matches');
 	let buttonBack = document.getElementById('step-back');
 	let buttonNext = document.getElementById('step-next');
+	let scoreBoard = document.getElementById('score-board');
 	let _currentMatchIndex;
 	ReplayHelper.init(replay=>{
 		selectMatches.onchange = ()=>{
@@ -15,6 +16,31 @@ function a(){
 				document.body.innerText = matchLog.error;
 				return;
 			}
+			let scoreBoardString = '<div style="text-align: center; font-style: italic;">'+(replay.arenaResult.result.partialResult?'Partial result':'Result')+'</div><table><tr><th>Team</th><th>Participant</th>';
+			let dataRows = [];
+			replay.arenaResult.matchLogs.forEach((matchLog, index) => {
+				if(matchLog.scores){
+					scoreBoardString += '<th>'+(1<replay.arenaResult.matchLogs.length ? 'Match '+(index+1) : 'Score')+'</th>';
+					matchLog.scores.forEach(score => {
+						if(!dataRows[score.team]){
+							dataRows[score.team] = ['<tr style="color:'+replay.arenaResult.teams[score.team].color.RGB+';"><td>'+score.team+'</td><td>'+score.members[0].name+'</td>', score.score];
+						}
+						dataRows[score.team][0] += '<td>'+score.score+'</td>';
+					});
+				}
+			});
+			if(1 < replay.arenaResult.matchLogs.length){
+				scoreBoardString += '<th>Total</th><th>Average</th>';
+				replay.arenaResult.result.team.forEach((r,i) => {
+					let average = Math.round(r.average.score*10)/10;
+					if(average%1 === 0){
+						average = ''+average+'.0';
+					}
+					dataRows[i][0] += '<td>'+r.total.score+'</td><td data-average="'+r.average.score+'">'+average+'</td></tr>';
+				});
+			}
+			scoreBoardString += dataRows.sort((s1, s2) => s2[1]-s1[1]).map(s => s[0]).join('')+'</table>';
+			scoreBoard.innerHTML = scoreBoardString;
 			let firstMover = matchLog.log[0].value.mover;
 			let baseDown = replay.arenaResult.settings.gameboard.boardLength;
 			let baseUp = baseDown*2 + 1;
@@ -47,7 +73,9 @@ function a(){
 			}
 			function setBoard(logIndex=-1){
 				buttonBack.disabled = slider.valueAsNumber === 0;
-				buttonNext.disabled = slider.valueAsNumber === matchLog.log.length;
+				let isFinished = slider.valueAsNumber === matchLog.log.length || matchLog.log.length === 0;
+				buttonNext.disabled = isFinished;
+				scoreBoard.parentElement.parentElement.style.display = isFinished ? '' : 'none';
 				let log = -1 < logIndex ? matchLog.log[logIndex].value : null;
 				let state = log !== null ? log.gameboard.slice() : null;
 				if(log !== null && log.mover !== firstMover){
@@ -56,28 +84,26 @@ function a(){
 					}
 				}
 				// Rezero base columns.
-				document.getElementById('column-up').innerHTML = '<div id="square_' + baseUp + '" class="square square-up">' + (state === null ? 0 : state[baseUp]) + '</div>';
 				document.getElementById('column-down').innerHTML = '<div id="square_' + baseDown + '" class="square">' + (state === null ? 0 : state[baseDown]) + '</div>';
+				document.getElementById('column-up').innerHTML = '<div id="square_' + baseUp + '" class="square square-up">' + (state === null ? 0 : state[baseUp]) + '</div>';
 
 				// Recreate up and down rows.
-				let rowUp = document.getElementById('rowUp');
 				let rowDown = document.getElementById('rowDown');
+				let rowUp = document.getElementById('rowUp');
 				rowUp.innerHTML = '';
 				rowDown.innerHTML = '';
 				let boardSize = replay.arenaResult.settings.gameboard.boardLength;
 				let startValue = replay.arenaResult.settings.gameboard.startValue;
 				for(let index = 0; index < boardSize; index++){
-					let indexUp = (boardSize*2 - index);
 					let indexDown = index;
-					rowUp.innerHTML += '<div id="square_' + indexUp + '" class="square square-up">' + (state === null ? startValue : state[indexUp]) + '</div>';
+					let indexUp = (boardSize*2 - index);
 					rowDown.innerHTML += '<div id="square_' + indexDown + '" class="square">' + (state === null ? startValue : state[indexDown]) + '</div>';
+					rowUp.innerHTML += '<div id="square_' + indexUp + '" class="square square-up">' + (state === null ? startValue : state[indexUp]) + '</div>';
 				}
 
-				// Customize squares
-				//let baseUpSquare = document.getElementById('square_' + baseUp);
-				//let baseDownSquare = document.getElementById('square_' + baseDown);
-				//baseUpSquare.style.backgroundColor = colorBaseUp; // TODO: Set team color.
-				//baseDownSquare.style.backgroundColor = colorBaseDown; // TODO: Set team color.
+				let teams = replay.arenaResult.teams;
+				document.getElementById('square_'+baseDown).style.backgroundColor = teams[0].color.RGB;
+				document.getElementById('square_'+baseUp).style.backgroundColor = teams[1].color.RGB;
 
 				resizeGameboard();
 			}

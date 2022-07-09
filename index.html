@@ -27,6 +27,31 @@
 				background-color: whitesmoke;
 			}
 
+			#score-board-outer-wrapper {
+				height: 100%;
+				width: 100%;
+				top: 0;
+				color: chartreuse;
+				position: fixed;
+				left: 0;
+			}
+			#score-board-inner-wrapper {
+				display: flex;
+				height: 100%;
+				justify-content: center;
+				align-items: center;
+			}
+			#score-board{
+				border: 1px solid black;
+				background-color: rgba(0,0,0,.9);
+				border-radius: 25px;
+				padding: 15px;
+				text-align: left;
+			}
+			#score-board tr>th:not(:first-child), #score-board tr>td:not(:first-child) {
+				padding-left: 1em;
+			}
+
 			#controller {
 				width: 100%;
 				display: flex;
@@ -79,6 +104,11 @@
 
 				<div class="column" id="column-down">
 					<!-- Square -->
+				</div>
+			</div>
+			<div id="score-board-outer-wrapper" style="display: none;">
+				<div id="score-board-inner-wrapper">
+					<div id="score-board"></div>
 				</div>
 			</div>
 			<span id="first-player"></span>
