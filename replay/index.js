@@ -41,16 +41,16 @@ function a(){
 			}
 			scoreBoardString += dataRows.sort((s1, s2) => s2[1]-s1[1]).map(s => s[0]).join('')+'</table>';
 			scoreBoard.innerHTML = scoreBoardString;
-			let firstMover = matchLog.log[0].value.mover;
+			let firstMover = matchLog.log.get(0).value.mover;
 			let baseDown = replay.arenaResult.settings.gameboard.boardLength;
 			let baseUp = baseDown*2 + 1;
 			let slider = document.getElementById('slider');
 			{
-				let first = matchLog.log[0].value.mover;
+				let first = matchLog.log.get(0).value.mover;
 				document.getElementById('first-player').innerHTML = first;
 				let secund = document.getElementById('secund-player')
 				for(let index = 0; index < matchLog.log.length; index++) {
-					const log = matchLog.log[index].value;
+					const log = matchLog.log.get(index).value;
 					if(log.mover !== first){
 						secund.innerHTML = log.mover;
 					}
@@ -76,7 +76,7 @@ function a(){
 				let isFinished = slider.valueAsNumber === matchLog.log.length || matchLog.log.length === 0;
 				buttonNext.disabled = isFinished;
 				scoreBoard.parentElement.parentElement.style.display = isFinished ? '' : 'none';
-				let log = -1 < logIndex ? matchLog.log[logIndex].value : null;
+				let log = -1 < logIndex ? matchLog.log.get(logIndex).value : null;
 				let state = log !== null ? log.gameboard.slice() : null;
 				if(log !== null && log.mover !== firstMover){
 					for(let i = 0; i < state.length/2; i++) {
