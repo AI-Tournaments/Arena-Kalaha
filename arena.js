@@ -56,8 +56,9 @@ function sumScore(score, gameboardLength, startValue, participants){
 	if(errorFound){
 		return null;
 	}
-	participants.addScore(0, score[0]);
-	participants.addScore(1, score[1]);
+	participants.forEach(participant => {
+		participant.addScore(score[participant.team]);
+	});
 }
 function callParticipant(match, aiIndex){
 	let participant = match.participants.get(aiIndex%2, 0);
