@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Replay</title>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-TJFMG29186"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-TJFMG29186');</script>
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<meta content="yes" name="mobile-web-app-capable">
+		<style>
+			#gamebord-wrapper {
+				text-align: center;
+			}
+			#secund-player {
+				display: block;
+				text-align: left;
+			}
+			#first-player {
+				display: block;
+				text-align: right;
+			}
+
+			#gamebord {
+				cursor: default;
+				user-select: none;
+				display: inline-block;
+				border: 1px solid black;
+				background-color: whitesmoke;
+			}
+
+			#score-board-outer-wrapper {
+				height: 100%;
+				width: 100%;
+				top: 0;
+				color: chartreuse;
+				position: fixed;
+				left: 0;
+			}
+			#score-board-inner-wrapper {
+				display: flex;
+				height: 100%;
+				justify-content: center;
+				align-items: center;
+			}
+			#score-board{
+				border: 1px solid black;
+				background-color: rgba(0,0,0,.9);
+				border-radius: 25px;
+				padding: 15px;
+				text-align: left;
+			}
+			#score-board tr>th:not(:first-child), #score-board tr>td:not(:first-child) {
+				padding-left: 1em;
+			}
+
+			#controller {
+				width: 100%;
+				display: flex;
+			}
+			#slider {
+				width: -webkit-fill-available;
+			}
+
+			.column {
+				display: table-cell;
+			}
+
+			.row {
+				display: flex;
+			}
+
+			#column-up>.square, #column-down>.square {
+				transform: translate(0%, 50%);
+				display: inline-grid;
+			}
+
+			.square {
+				border: 1px solid black;
+				border-radius: 50%;
+				text-align: center;
+				min-width: 18.2px;
+				margin: 1px;
+			}
+		</style>
+		<script src="https://ai-tournaments.github.io/ReplayHelper.js"></script>
+		<script src="index.js"></script>
+	</head>
+	<body onload="a()">
+		<div id="gamebord-wrapper">
+			<span id="secund-player"></span>
+			<div id="gamebord">
+				<div class="column" id="column-up">
+					<!-- Square -->
+				</div>
+
+				<div class="column">
+					<div class="row" id="rowUp">
+						<!-- Squares -->
+					</div>
+
+					<div class="row" id="rowDown">
+						<!-- Squares -->
+					</div>
+				</div>
+
+				<div class="column" id="column-down">
+					<!-- Square -->
+				</div>
+			</div>
+			<div id="score-board-outer-wrapper" style="display: none;">
+				<div id="score-board-inner-wrapper">
+					<div id="score-board"></div>
+				</div>
+			</div>
+			<span id="first-player"></span>
+			<div id="controller">
+				<select id="matches"></select>
+				<input type="button" id="step-back" value="<" disabled>
+				<input type="button" id="step-next" value=">">
+				<input type="range" value="0" min="0" id="slider">
+			</div>
+		</div>
+	</body>
+</html>
